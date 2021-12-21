@@ -12,11 +12,14 @@ mongoose.connect(uri, (err: any) => {
     }
 });
 
-export const QuizSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    creator: { type: String, required: true },
-    questions: { type: Array, required: true },
-});
+export const QuizSchema = new mongoose.Schema(
+    {
+        title: { type: String, required: true },
+        creator: { type: String, required: true },
+        questions: { type: Array, required: true },
+    },
+    { versionKey: false }
+);
 
 export interface quizType {
     title: String;
