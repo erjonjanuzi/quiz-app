@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { Route, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { useStore } from '../stores/store';
 import { ToastContainer } from 'react-toastify';
 import NavBar from './NavBar';
 import HomePage from '../../features/home/HomePage';
+import { Container } from 'semantic-ui-react';
+import PlayGameHome from '../../features/play/PlayGameHome';
 
 function App() {
   return (
@@ -15,6 +17,11 @@ function App() {
         render={() => (
           <>
             <NavBar />
+            <Container style={{ marginTop: '7em' }}>
+              <Switch>
+                
+              </Switch>
+            </Container>
           </>
         )}
       />

@@ -1,6 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Container, Header, Segment, Image, Button } from 'semantic-ui-react';
+import { Container, Header, Segment, Image, Button, Divider } from 'semantic-ui-react';
+import PlayGameHome from '../play/PlayGameHome';
+import { Link } from 'react-router-dom';
 
 export default observer(function HomePage() {
     return (
@@ -9,6 +11,13 @@ export default observer(function HomePage() {
                 <Header as='h1' inverted>
                     Quizzly
                 </Header>
+                <PlayGameHome />
+                <Divider />
+                <Segment basic>
+                    <Header >
+                        or Host a quiz
+                    </Header>
+                </Segment>
             </Container>
         </Segment>
     )

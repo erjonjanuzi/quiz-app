@@ -9,12 +9,7 @@ export default observer(function NavBar() {
         <Menu inverted fixed='top'>
             <Container>
             <Menu.Item as={NavLink} exact to='/' header>
-                    Reactivities
-                </Menu.Item>
-                <Menu.Item as={NavLink} to='/activities' name='Activities' />
-                <Menu.Item as={NavLink} to='/errors' name='Errors' />
-                <Menu.Item>
-                    <Button as={NavLink} to='/createActivity' positive content='Create Activity' />
+                    Quizzly
                 </Menu.Item>
                 <Menu.Item position='right'>
                     <Dropdown pointing='top left' >
