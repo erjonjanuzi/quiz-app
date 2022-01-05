@@ -15,7 +15,9 @@ export default observer(function HomePage() {
                 <Divider />
                 <Segment basic>
                     <Header >
-                        or Host a quiz
+                        or <Button as={Link} to='/host' inverted>
+                            Host!
+                        </Button>
                     </Header>
                 </Segment>
             </Container>

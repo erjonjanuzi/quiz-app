@@ -5,7 +5,9 @@ import { ToastContainer } from 'react-toastify';
 import NavBar from './NavBar';
 import HomePage from '../../features/home/HomePage';
 import { Container } from 'semantic-ui-react';
-import PlayGameHome from '../../features/play/PlayGameHome';
+import QuizList from '../../features/quiz/QuizList';
+import ViewQuizPage from '../../features/quiz/ViewQuizPage';
+import Play from '../../features/quiz/Play';
 
 function App() {
   return (
@@ -16,10 +18,11 @@ function App() {
         path={'/(.+)'}
         render={() => (
           <>
-            <NavBar />
             <Container style={{ marginTop: '7em' }}>
               <Switch>
-                
+                <Route path='/home' component={QuizList} />
+                <Route path='/quiz/view/:quizId' component={ViewQuizPage} />
+                <Route exact path='/quiz/play/:quizId' component={Play} />
               </Switch>
             </Container>
           </>
