@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTimer } from 'react-timer-hook';
 import { Button } from 'semantic-ui-react';
 import StartGame from './StartGame';
@@ -14,6 +15,7 @@ const quiz = {
         {
             number: 1,
             text: 'Is this the first question?',
+            points: 1000,
             answers: [
                 {
                     text: 'Yes',
@@ -35,6 +37,7 @@ const quiz = {
         {
             number: 2,
             text: 'Is this the second question?',
+            points: 1000,
             answers: [
                 {
                     text: 'Yes',
@@ -56,6 +59,7 @@ const quiz = {
         {
             number: 3,
             text: 'Is this the third question?',
+            points: 1000,
             answers: [
                 {
                     text: 'Yes',
@@ -78,29 +82,37 @@ const quiz = {
 }
 
 export default observer(function Play() {
-    // const [currentQuestion, setCurrentQuestion] = useState(0);
-    // const [showScore, setShowScore] = useState(false);
-    // const [score, setScore] = useState(0);
-
-    // const handleAnswerOptionClick = (isCorrect: boolean) => {
-    //     if (isCorrect) {
-    //         setScore(score + 1);
-    //     }
-
-    //     const nextQuestion = currentQuestion + 1;
-    //     if (nextQuestion < quiz.questions.length) {
-    //         setCurrentQuestion(nextQuestion);
-    //     } else {
-    //         setShowScore(true);
-    //     }
-    // };
     const [start, setStart] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [questionOver, setQuestionOver] = useState(false);
+    const [correct, setCorrect] = useState(false);
+    const [score, setScore] = useState(0);
+    const [totalScore, setTotalScore] = useState(0);
 
     const handleAnswerOptionClick = (isCorrect: boolean) => {
-        setCurrentQuestion(currentQuestion+1);
+        setCorrect(isCorrect);
+        setQuestionOver(true);
     }
+
+    const handleNextQuestion = () => {
+        setQuestionOver(false);
+        setScore(0);
+        setCorrect(false);
+        const nextQuestion = currentQuestion + 1;
+        if (nextQuestion < quiz.questions.length) {
+            setCurrentQuestion(nextQuestion);
+        } else {
+            setGameOver(true);
+        }
+    }
+
+    useEffect(() => {
+        if (correct) {
+            setScore(quiz.questions[currentQuestion].points);
+            setTotalScore(totalScore + score);
+        }
+    }, [questionOver, score])
 
     return (
         <>
@@ -109,19 +121,33 @@ export default observer(function Play() {
                     ?
                     (!gameOver
                         ?
-                        <>
-                            <span>Question {currentQuestion + 1}/{quiz.questions.length}</span>
-                            <h1>{quiz.questions[currentQuestion].text}</h1>
-                            <hr />
-                            <div>
-                                <Button fluid color='red' content={quiz.questions[currentQuestion].answers[0].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[0].isCorrect)} /><br />
-                                <Button fluid color='green' content={quiz.questions[currentQuestion].answers[1].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[1].isCorrect)}/><br />
-                                <Button fluid color='purple' content={quiz.questions[currentQuestion].answers[2].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[2].isCorrect)} /><br />
-                                <Button fluid color='yellow'  content={quiz.questions[currentQuestion].answers[3].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[3].isCorrect)} />
-                            </div>
-                        </>
+                        (!questionOver
+                            ?
+                            <>
+                                <span>Question {currentQuestion + 1}/{quiz.questions.length}</span>
+                                <h1>{quiz.questions[currentQuestion].text}</h1>
+                                <hr />
+                                <div>
+                                    <Button fluid color='red' content={quiz.questions[currentQuestion].answers[0].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[0].isCorrect)} /><br />
+                                    <Button fluid color='green' content={quiz.questions[currentQuestion].answers[1].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[1].isCorrect)} /><br />
+                                    <Button fluid color='purple' content={quiz.questions[currentQuestion].answers[2].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[2].isCorrect)} /><br />
+                                    <Button fluid color='yellow' content={quiz.questions[currentQuestion].answers[3].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[3].isCorrect)} />
+                                </div>
+                            </>
+                            :
+                            <>
+                                <span>{correct ? 'Correct' : 'Wrong'}</span>
+                                <h1>{score} points</h1>
+                                <h1>Total points: {totalScore}</h1>
+                                <Button fluid color='red' content='Next question' onClick={() => handleNextQuestion()} /><br />
+                            </>
+                        )
                         :
-                        <h1>Game is over</h1>
+                        <>
+                            <h1>Finished</h1>
+                            <h1>You earned {totalScore} points</h1>
+                                <Button as={Link} to={'/home'} content='Go to homepage' />
+                        </>
                     )
                     :
                     <StartGame setStart={setStart} />
@@ -129,26 +155,3 @@ export default observer(function Play() {
         </>
     )
 })
-
-
-{/* <div className='app'>
-                {showScore ? (
-                    <div className='score-section'>
-                        You scored {score} out of {quiz.questions.length}
-                    </div>
-                ) : (
-                    <>
-                        <div className='question-section'>
-                            <div className='question-count'>
-                                <span>Question {currentQuestion + 1}</span>/{quiz.questions.length}
-                            </div>
-                            <div className='question-text'>{quiz.questions[currentQuestion].text}</div>
-                        </div>
-                        <div className='answer-section'>
-                            {quiz.questions[currentQuestion].answers.map((answer) => (
-                                <button onClick={() => handleAnswerOptionClick(answer.isCorrect)}>{answer.text}</button>
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div> */}
