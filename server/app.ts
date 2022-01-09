@@ -3,12 +3,14 @@ import quizRoutes from './routes/quizRoutes';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import userRoutes from './routes/userRoutes';
+import cors from 'cors';
 
 dotenv.config();
 
 const app: Application = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 // Default routes
 app.get('/', (req: Request, res: Response, next: NextFunction) => {
