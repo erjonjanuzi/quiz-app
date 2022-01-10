@@ -4,12 +4,14 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import userRoutes from './routes/userRoutes';
 import cors from 'cors';
+import User from './modules/user';
 
 dotenv.config();
 
 const app: Application = express();
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Default routes

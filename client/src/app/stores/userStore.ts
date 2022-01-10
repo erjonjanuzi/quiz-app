@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
+import { toast } from "react-toastify";
 import { history } from "../..";
 import agent from "../api/agent";
 import { User, UserFormValues } from "../models/user";
@@ -12,7 +13,7 @@ export default class UserStore {
     }
 
     get isLoggedIn() {
-        return this.user;
+        return !!this.user;
     }
 
     login = async (creds: UserFormValues) => {
@@ -20,7 +21,7 @@ export default class UserStore {
             const user = await agent.Account.login(creds);
             store.commonStore.setToken(user.token);
             runInAction(() => this.user = user);
-            history.push('/home');
+            history.push('/community');
             store.modalStore.closeModal();
         } catch (error) {
             throw error;
@@ -37,7 +38,6 @@ export default class UserStore {
     getUser = async () => {
         try {
             const user = await agent.Account.current();
-            store.commonStore.setToken(user.token);
             runInAction(() => this.user = user);
         } catch (error) {
             console.log(error);
@@ -46,11 +46,14 @@ export default class UserStore {
 
     register = async (creds: UserFormValues) => {
         try {
-            await agent.Account.register(creds);
-            history.push(`/account/registerSuccess?email=${creds.email}`);
+            const user = await agent.Account.register(creds);
+            store.commonStore.setToken(user.token);
+            runInAction(() => this.user = user);
+            history.push('/community');
             store.modalStore.closeModal();
         } catch (error) {
-            throw error;
+            console.log('userStore', error);
+            // throw error;
         }
     }
 

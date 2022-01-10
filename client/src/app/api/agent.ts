@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { history } from '../..';
+import { Quiz } from '../models/quiz';
 import { User, UserFormValues } from '../models/user';
 import { store } from '../stores/store';
 
@@ -14,13 +15,13 @@ axios.defaults.baseURL = 'http://localhost:4000';
 
 axios.interceptors.request.use(config => {
     const token = store.commonStore.token;
-    if (token) config.headers.Authorization = `Bearer ${token}`
+    if (token) config.headers.Authorization = `${token}`
     return config;
 })
 
 axios.interceptors.response.use(async response => {
     if (process.env.NODE_ENV === 'development') await sleep(1000);
-
+    
     return response;
 }, (error: AxiosError) => {
     const { data, status, config, headers } = error.response!;
@@ -68,14 +69,18 @@ const requests = {
 }
 
 const Account = {
-    current: () => requests.get<User>('/user'),
+    current: () => requests.get<User>('/user/current'),
     login: (user: UserFormValues) => requests.post<User>('/user/login', user),
     register: (user: UserFormValues) => requests.post<User>('/user/register', user),
 }
 
+const Quizzes = {
+    all: () => requests.get<Quiz[]>('/quiz/all')
+}
 
 const agent = {
     Account,
+    Quizzes
 }
 
 export default agent;

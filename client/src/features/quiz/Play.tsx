@@ -146,7 +146,7 @@ export default observer(function Play() {
                         <>
                             <h1>Finished</h1>
                             <h1>You earned {totalScore} points</h1>
-                                <Button as={Link} to={'/home'} content='Go to homepage' />
+                                <Button as={Link} to={'/community'} content='Go to homepage' />
                         </>
                     )
                     :

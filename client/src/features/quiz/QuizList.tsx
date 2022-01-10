@@ -24,7 +24,7 @@ export default observer( function QuizList() {
     return (
         <>
             <h1>Quiz list</h1>
-            {quizzes.map(quiz => <QuizCard quiz={quiz} />)}
+            {/* {quizzes.map(quiz => <QuizCard quiz={quiz} />)} */}
         </>
     )
 })

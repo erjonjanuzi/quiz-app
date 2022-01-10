@@ -27,4 +27,5 @@ const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 app.post('/register', userController.register);
 app.post('/login', userController.login);
+app.get('/current', userController.current);
 exports.default = app;

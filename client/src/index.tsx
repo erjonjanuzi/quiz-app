@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { store, StoreContext } from './app/stores/store';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 export const history = createBrowserHistory();
 

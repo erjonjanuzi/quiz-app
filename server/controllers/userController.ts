@@ -3,6 +3,14 @@ import User, { userType } from '../modules/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+declare global {
+    namespace Express {
+        interface Request {
+            user: any
+        }
+    }
+}
+
 export let login = async (req: Request, res: Response) => {
     try {
         // Get user input
@@ -24,7 +32,7 @@ export let login = async (req: Request, res: Response) => {
 
             // save user token
             user.token = token;
-
+            console.log(req.user);
             // user
             res.status(200).json(user);
         } else {
@@ -44,7 +52,7 @@ export let register = async (req: Request, res: Response) => {
         const oldUser = await User.findOne({ email });
 
         if (oldUser) {
-            return res.status(409).send('User Already Exist. Please Login');
+            res.status(400).send('User already exists');
         }
 
         //Encrypt user password
@@ -76,3 +84,11 @@ export let register = async (req: Request, res: Response) => {
         console.log(err);
     }
 };
+
+export const current = (req: Request, res: Response) => {
+    try {
+        res.send(req.user);
+    } catch (error){
+        console.log(error);
+    }
+}

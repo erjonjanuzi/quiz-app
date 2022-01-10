@@ -2,17 +2,17 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Card, Icon, Image, Segment } from 'semantic-ui-react';
+import { Quiz } from '../../app/models/quiz';
 
 interface Props {
-    quiz: any
+    quiz: Quiz
 }
 
 export default observer(function QuizCard({ quiz }: Props) {
 
     return (
-        <Link to={`/quiz/view/${quiz.id}`}>
             <Card link>
-                <Image src='https://icebreakerideas.com/wp-content/uploads/2020/09/Geography-Trivia-e1608679560350.jpg' wrapped ui={false} />
+                <Image src={`/assets/subjects/${quiz.subject}.jpeg`} wrapped ui={false} />
                 <Card.Content>
                     <Card.Header>{quiz.name}</Card.Header>
                     <Card.Meta>
@@ -29,13 +29,12 @@ export default observer(function QuizCard({ quiz }: Props) {
                     </a>
                     <Button
                         as={Link}
-                        to={`/quiz/play/${quiz.id}`}
+                        to={`/quiz/play/${quiz._id}`}
                         color='pink'
                         floated='right'
                         content='Play'
                     />
                 </Card.Content>
             </Card>
-        </ Link>
     )
 })

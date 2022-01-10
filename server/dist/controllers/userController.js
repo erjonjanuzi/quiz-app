@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.login = void 0;
+exports.current = exports.register = exports.login = void 0;
 const user_1 = __importDefault(require("../modules/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -29,6 +29,7 @@ let login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             // save user token
             user.token = token;
+            req.user = user;
             // user
             res.status(200).json(user);
         }
@@ -74,3 +75,12 @@ let register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.register = register;
+const current = (req, res) => {
+    try {
+        res.send(req.user);
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+exports.current = current;

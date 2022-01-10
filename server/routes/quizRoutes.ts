@@ -4,10 +4,14 @@ import auth from '../middleware/auth';
 
 const app = express();
 
-app.get('/', auth, quizController.getQuizzes);
+app.get('/all', auth, quizController.getQuizzes);
+
 app.get('/:id', auth, quizController.getQuiz);
-app.put('/', auth, quizController.updateQuiz);
-app.post('/', auth, quizController.createQuiz);
+
 app.delete('/:id', auth, quizController.deleteQuiz);
+
+// app.put('/', auth, quizController.updateQuiz);
+
+// app.post('/', auth, quizController.createQuiz);
 
 export default app;
