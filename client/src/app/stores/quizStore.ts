@@ -1,8 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Quiz } from "../models/quiz";
-import {format} from 'date-fns';
-import { store } from "./store";
 
 export default class QuizStore {
     quizRegistry = new Map<string, Quiz>();
@@ -10,7 +8,6 @@ export default class QuizStore {
     editMode = false;
     loading = false;
     loadingInitial = false;
-
 
     constructor() {
         makeAutoObservable(this)
@@ -31,7 +28,7 @@ export default class QuizStore {
     //     )
     // }
 
-    get quizzes(){
+    get quizzes() {
         return Array.from(this.quizRegistry.values());
     }
 
@@ -49,27 +46,27 @@ export default class QuizStore {
         }
     }
 
-    // loadQuiz= async (id: string) => {
-    //     let quiz = this.getQuiz(id);
-    //     if (quiz) {
-    //         this.selectedQuiz = quiz;
-    //         return quiz;
-    //     } else {
-    //         this.loadingInitial = true;
-    //         try {
-    //             quiz = await agent.Quizzes.details(id);
-    //             this.setActivity(activity);
-    //             runInAction(() => {
-    //                 this.selectedActivity = activity;
-    //             })
-    //             this.setLoadingInitial(false);
-    //             return activity;
-    //         } catch (error) {
-    //             console.log(error);
-    //             this.setLoadingInitial(false);
-    //         }
-    //     }
-    // }
+    loadQuiz = async (id: string) => {
+        let quiz = this.getQuiz(id);
+        if (quiz) {
+            this.selectedQuiz = quiz;
+            return quiz;
+        } else {
+            this.loadingInitial = true;
+            try {
+                quiz = await agent.Quizzes.details(id);
+                this.setQuiz(quiz);
+                runInAction(() => {
+                    this.selectedQuiz = quiz;
+                })
+                this.setLoadingInitial(false);
+                return quiz;
+            } catch (error) {
+                console.log(error);
+                this.setLoadingInitial(false);
+            }
+        }
+    }
 
     private setQuiz = (quiz: Quiz) => {
         this.quizRegistry.set(quiz._id!, quiz);
@@ -81,6 +78,10 @@ export default class QuizStore {
 
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
+    }
+
+    clearSelectedQuiz = () => {
+        this.selectedQuiz = undefined;
     }
 
     // createActivity = async (activity: ActivityFormValues) => {

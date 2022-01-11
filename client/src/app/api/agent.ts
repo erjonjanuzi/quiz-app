@@ -20,8 +20,8 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(async response => {
-    if (process.env.NODE_ENV === 'development') await sleep(1000);
-    
+    if (process.env.NODE_ENV === 'development') { await sleep(1000) };
+
     return response;
 }, (error: AxiosError) => {
     const { data, status, config, headers } = error.response!;
@@ -75,7 +75,8 @@ const Account = {
 }
 
 const Quizzes = {
-    all: () => requests.get<Quiz[]>('/quiz/all')
+    all: () => requests.get<Quiz[]>('/quiz/all'),
+    details: (id: string) => requests.get<Quiz>(`/quiz/${id}`),
 }
 
 const agent = {

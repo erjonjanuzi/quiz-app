@@ -12,10 +12,10 @@ import LoadingComponent from './LoadingComponent';
 import ModalContainer from '../common/modals/ModalContainer';
 import PrivateRoute from './PrivateRoute';
 import Main from '../../features/community/Main';
+import { observer } from 'mobx-react-lite';
 
 function App() {
-  const location = useLocation();
-  const {commonStore, userStore} = useStore();
+  const { commonStore, userStore } = useStore();
 
   useEffect(() => {
     if (commonStore.token) {
@@ -25,22 +25,22 @@ function App() {
     }
   }, [commonStore, userStore])
 
-  // if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...' />
+  if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...' />
 
   return (
     <>
       <ToastContainer position='top-right' hideProgressBar />
       <ModalContainer />
       <Route exact path='/' component={HomePage} />
+      <PrivateRoute exact path='/quiz/play/:id' component={Play} />
       <Route
         path={'/(.+)'}
         render={() => (
           <>
-            <Container style={{ marginTop: '7em' }}>
+            <Container style={{ marginTop: '5em' }}>
               <Switch>
                 <PrivateRoute path='/community' component={Main} />
-                <PrivateRoute path='/quiz/view/:quizId' component={ViewQuizPage} />
-                <PrivateRoute exact path='/quiz/play/:quizId' component={Play} />
+                <PrivateRoute path='/quiz/view/:id' component={ViewQuizPage} />
               </Switch>
             </Container>
           </>
@@ -50,4 +50,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);

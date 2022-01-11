@@ -1,11 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Header, Segment, Image, Button, Divider } from 'semantic-ui-react';
 import { useStore } from '../../app/stores/store';
 import LoginForm from '../users/LoginForm';
 import RegisterForm from '../users/RegisterForm';
-import { history } from '../..';
 
 export default observer(function HomePage() {
     const { userStore, modalStore } = useStore();

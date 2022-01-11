@@ -16,13 +16,18 @@ body {
 .masthead {
   display: flex;
   align-items: center;
-  background-image: linear-gradient(
+  /* background-image: linear-gradient(
           135deg,
           rgb(253, 18, 89) 0%,
           rgb(174, 33, 111) 69%,
           rgb(32, 167, 172) 89%
-  ) !important;
+  ) !important; */
   height: 100vh;
+  background-color: rgb(18, 134, 134);
+  animation-name: color;
+  animation-duration: 10s;
+  animation-iteration-count: infinite; 
+  animation-timing-function: linear;
 }
 
 .masthead .ui.menu .ui.button,
@@ -38,6 +43,24 @@ body {
 .masthead h2 {
   font-size: 1.7em;
   font-weight: normal;
+}
+
+@keyframes color{
+  0%{
+    background-color: #00d0ff;
+  }
+  25%{
+    background-color: #e70dbf;
+  }
+  50%{
+    background-color: #ec780b;
+  }
+  75%{
+    background-color: #30d62d;
+  }
+  100%{
+    background-color: #00d0ff;
+  }
 }
 
 /*end home page styles*/

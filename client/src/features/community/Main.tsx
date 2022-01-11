@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 import { Divider, Header } from 'semantic-ui-react';
+import LoadingComponent from '../../app/layout/LoadingComponent';
 import NavBar from '../../app/layout/NavBar';
 import { useStore } from '../../app/stores/store';
 import QuizSection from './QuizSection';
 
-export default observer(function Main(){
-    const { quizStore } = useStore();
+export default observer(function Main() {
 
     return (
         <>

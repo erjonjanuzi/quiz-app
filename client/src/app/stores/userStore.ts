@@ -52,8 +52,7 @@ export default class UserStore {
             history.push('/community');
             store.modalStore.closeModal();
         } catch (error) {
-            console.log('userStore', error);
-            // throw error;
+            throw error;
         }
     }
 
