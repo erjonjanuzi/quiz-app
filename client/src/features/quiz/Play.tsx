@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Container, Header, Segment } from 'semantic-ui-react';
+import { Button, Container, Divider, Grid, Header, Icon, Label, Segment } from 'semantic-ui-react';
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import { useStore } from '../../app/stores/store';
 import QuestionTimer from './QuestionTimer';
@@ -21,6 +21,8 @@ export default observer(function Play() {
     const [score, setScore] = useState(0);
     const [totalScore, setTotalScore] = useState(0);
     const [timerEnded, setTimerEnded] = useState(false);
+    const [lastQuestion, setLastQuestion] = useState(false);
+    const [streak, setStreak] = useState(0);
 
     const [play, { stop }] = useSound('/assets/sounds/music.mp3', {
         volume: 1
@@ -57,7 +59,14 @@ export default observer(function Play() {
             setGameOver(true);
         }
         stop();
-        play();
+        if (!lastQuestion) {
+            play();
+        }
+    }
+
+    const handleQuizEnd = () => {
+        setGameOver(true);
+        stop();
     }
 
     let startTime = new Date();
@@ -71,9 +80,12 @@ export default observer(function Play() {
         if (correct) {
             setScore(quiz!.questions[currentQuestion].points);
             setTotalScore(totalScore + score);
-        }
+        } 
         if (quiz) {
             questionTimer.setSeconds(questionTimer.getSeconds() + quiz.questions[currentQuestion].time);
+        }
+        if (quiz && currentQuestion + 1 === quiz?.questions.length) {
+            setLastQuestion(true);
         }
     }, [questionOver, score, start])
 
@@ -163,17 +175,38 @@ export default observer(function Play() {
                                     </Segment>
                                 }
                                 <Header style={{ 'font-size': '70px', 'margin-top': '100px', 'color': 'white' }} content={`${correct ? '+' : ''} ${score} points`} />
-                                <h1>Total points: {totalScore}</h1>
-                                <Button icon='right arrow' labelPosition='right' size='huge' color='pink' content='Next question' onClick={() => handleNextQuestion()} /><br />
+                                {streak !== 0 &&
+                                    <h1>{`Answer streak🔥 `}<Label content={streak} color='red' circular size='massive' /></h1>
+                                }
+                                {!lastQuestion
+                                    ?
+                                    <>
+                                        <Button icon='right arrow' labelPosition='right' size='huge' color='pink' content='Next question' onClick={() => handleNextQuestion()} /><br />
+                                    </>
+                                    :
+                                    <>
+                                        <Button icon='right arrow' labelPosition='right' size='huge' color='pink' content='End quiz' onClick={() => handleQuizEnd()} /><br />
+                                    </>
+                                }
                             </Container>
                         </Segment>
                     )
                     :
-                    <>
-                        <h1>Finished</h1>
-                        <h1>You earned {totalScore} points</h1>
-                        <Button as={Link} to={'/community'} content='Go to homepage' />
-                    </>
+                    <Segment inverted textAlign='center' vertical className='questions'>
+                        <Container>
+                            <span role="img" aria-label="Heart">
+                                🎉
+                            </span>
+                            <h1>You earned {totalScore} points</h1>
+                            <h1>Leaderboard goes here</h1>
+                            <Button.Group size='large'>
+                                <Button color='pink'>Homepage</Button>
+                                <Button.Or />
+                                <Button positive >Replay quiz</Button>
+                            </Button.Group>
+
+                        </Container>
+                    </Segment>
                 )
                 :
                 <StartTimer expiryTimestamp={startTime} onExpire={handleStart} />

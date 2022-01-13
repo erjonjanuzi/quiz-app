@@ -13,9 +13,9 @@ export default observer(function NavBar() {
                     <img src='/assets/logo.png' alt='logo' style={{ marginRight: '10px' }} />
                     Quizzly
                 </Menu.Item>
-                <Menu.Item icon='home' as={NavLink} to='/community' name='Community' />
+                <Menu.Item icon='star' as={NavLink} to='/community' name='Community' />
                 <Menu.Item icon='heart' as={NavLink} to='/favorited' name='Favorited' />
-                <Menu.Item icon='box' as={NavLink} to='/favorited' name='My Library' />
+                <Menu.Item icon='list' as={NavLink} to='/favorited' name='My Library' />
                 <Menu.Item position='right'>
                     <Button as={NavLink} to='/' positive content='Create Quiz' fluid />
                 </Menu.Item>

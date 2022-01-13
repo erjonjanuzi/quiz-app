@@ -177,3 +177,15 @@ body {
   font-size: 100px;
   margin: 40px 0;
 }
+
+.streak {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.streak span {
+  font-size: 30px;
+}
