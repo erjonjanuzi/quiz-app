@@ -15,6 +15,8 @@ export default function QuestionTimer({ expiryTimestamp, onExpire }: TimerSettin
 
 
     return (
-        <span>{seconds}</span>
+        <div style={{ fontSize: '40px' }}>
+            <Header content={`${seconds}`} />
+        </div>
     );
 }

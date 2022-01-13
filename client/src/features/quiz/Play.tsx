@@ -1,18 +1,16 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useTimer } from 'react-timer-hook';
-import { Button, Container, Header, Label, Segment } from 'semantic-ui-react';
+import { Button, Container, Header, Segment } from 'semantic-ui-react';
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import { useStore } from '../../app/stores/store';
 import QuestionTimer from './QuestionTimer';
-import StartGame from './StartGame';
 import StartTimer from './StartTimer';
-
+import useSound from 'use-sound';
 
 export default observer(function Play() {
-    const { quizStore, userStore } = useStore();
-    const { selectedQuiz: quiz, loadQuiz, loadingInitial, clearSelectedQuiz } = quizStore;
+    const { quizStore } = useStore();
+    const { selectedQuiz: quiz, loadQuiz, loadingInitial } = quizStore;
     const { id } = useParams<{ id: string }>();
 
     const [start, setStart] = useState(false);
@@ -24,9 +22,28 @@ export default observer(function Play() {
     const [totalScore, setTotalScore] = useState(0);
     const [timerEnded, setTimerEnded] = useState(false);
 
+    const [play, { stop }] = useSound('/assets/sounds/music.mp3', {
+        volume: 1
+    })
+    const [playSubmitAnswer] = useSound('/assets/sounds/submitAnswer.mp3');
+
+    const handleStart = () => {
+        setStart(true);
+        play();
+    }
+
+    const handleTimerEnded = () => {
+        setTimerEnded(true);
+        handleAnswerOptionClick(false);
+        stop();
+        playSubmitAnswer();
+    }
+
     const handleAnswerOptionClick = (isCorrect: boolean) => {
         setCorrect(isCorrect);
         setQuestionOver(true);
+        stop();
+        playSubmitAnswer();
     }
 
     const handleNextQuestion = () => {
@@ -39,34 +56,26 @@ export default observer(function Play() {
         } else {
             setGameOver(true);
         }
+        stop();
+        play();
     }
 
-    const handleStart = () => {
-        setStart(true);
-    }
-
-    const handleTimerEnded = () => {
-        setTimerEnded(true);
-        handleAnswerOptionClick(false);
-    }
-
-    const time = new Date();
-    time.setSeconds(time.getSeconds() + 3);
-
-    // const { seconds, isRunning, restart } = useTimer({ expiryTimestamp: time, onExpire: () => restartTimer()});
-
-    // useEffect(() => {
-    //     if (id) loadQuiz(id);
-    // }, [id, loadQuiz, clearSelectedQuiz]);
+    let startTime = new Date();
+    startTime.setSeconds(startTime.getSeconds() + 3);
+    let questionTimer = new Date();
 
     useEffect(() => {
-        if (id) loadQuiz(id);
+        if (id) {
+            loadQuiz(id)
+        }
         if (correct) {
             setScore(quiz!.questions[currentQuestion].points);
             setTotalScore(totalScore + score);
         }
-        if (start && quiz) time.setSeconds(time.getSeconds() + quiz.questions[currentQuestion].time);
-    }, [questionOver, score])
+        if (quiz) {
+            questionTimer.setSeconds(questionTimer.getSeconds() + quiz.questions[currentQuestion].time);
+        }
+    }, [questionOver, score, start])
 
     if (loadingInitial || !quiz) return <LoadingComponent />;
 
@@ -78,29 +87,86 @@ export default observer(function Play() {
                     ?
                     (!questionOver
                         ?
-                        <>
-                            <QuestionTimer expiryTimestamp={time} onExpire={handleTimerEnded} />
-                            <span>Question {currentQuestion + 1}/{quiz.questions.length}</span>
-                            <h1>{quiz.questions[currentQuestion].text}</h1>
-                            <hr />
-                            <div>
-                                <Button fluid color='red' content={quiz.questions[currentQuestion].answers[0].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[0].isCorrect)} /><br />
-                                <Button fluid color='green' content={quiz.questions[currentQuestion].answers[1].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[1].isCorrect)} /><br />
-                                <Button fluid color='purple' content={quiz.questions[currentQuestion].answers[2].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[2].isCorrect)} /><br />
-                                <Button fluid color='yellow' content={quiz.questions[currentQuestion].answers[3].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[3].isCorrect)} />
-                            </div>
-                        </>
+                        <Segment inverted textAlign='center' vertical className='questions'>
+                            <Container>
+                                <div>
+                                    <Segment secondary circular>
+                                        <QuestionTimer expiryTimestamp={questionTimer} onExpire={handleTimerEnded} />
+                                    </Segment>
+                                    <div style={{ fontSize: '40px' }}>
+                                        <Header style={{ color: 'white' }} content={`${currentQuestion + 1}/${quiz.questions.length}`} />
+                                    </div>
+                                </div>
+                                <div className='questions-container' >
+                                    <h1 className='player-name'>{quiz.questions[currentQuestion].text}</h1>
+                                    <div className='questions-grid' >
+                                        <div className='question q1' onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[0].isCorrect)}>
+                                            <div className='answer'>
+                                                <div className='shape-container'>
+                                                    <img src={'/assets/circle.svg'} alt='' className='shape-question' />
+                                                </div>
+                                                <h2>{quiz.questions[currentQuestion].answers[0].text}</h2>
+                                            </div>
+                                        </div>
+                                        <div className='question q2' onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[1].isCorrect)}>
+                                            <div className='answer'>
+                                                <div className='shape-container'>
+                                                    <img src={'/assets/diamond.svg'} alt='' className='shape-question' />
+                                                </div>
+                                                <h2>{quiz.questions[currentQuestion].answers[1].text}</h2>
+                                            </div>
+                                        </div>
+
+                                        <div className='question q3' onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[2].isCorrect)}>
+                                            <div className='answer'>
+                                                <div className='shape-container'>
+                                                    <img src={'/assets/square.svg'} alt='' className='shape-question' />
+                                                </div>
+                                                <h2>{quiz.questions[currentQuestion].answers[2].text}</h2>
+                                            </div>
+                                        </div>
+                                        <div className='question q4' onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[3].isCorrect)}>
+                                            <div className='answer'>
+                                                <div className='shape-container'>
+                                                    <img src={'/assets/triangle.svg'} alt='' className='shape-question' />
+                                                </div>
+                                                <h2>{quiz.questions[currentQuestion].answers[3].text}</h2>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </Container>
+                        </Segment>
                         :
-                        <>
-                            {timerEnded ? 
-                                <span>You ran out of time! Be faster next time</span>
-                                : 
-                                <span>{correct ? 'Correct' : 'Wrong'}</span>
-                            }
-                            <h1>{score} points</h1>
-                            <h1>Total points: {totalScore}</h1>
-                            <Button fluid color='red' content='Next question' onClick={() => handleNextQuestion()} /><br />
-                        </>
+                        <Segment inverted textAlign='center' vertical className='questions'>
+                            <Container>
+                                {timerEnded ?
+                                    <Segment textAlign='center' className='result' inverted color={'red'}>
+                                        <span role="img" aria-label="Heart">
+                                            ⌛️
+                                        </span>
+                                        <Header style={{ 'font-size': '40px' }} content={'You ran out of time! Try to be faster next time...'} />
+                                    </Segment>
+                                    :
+                                    <Segment textAlign='center' className='result' inverted color={correct ? 'green' : 'red'}>
+                                        {correct ?
+                                            <span role="img" aria-label="Heart">
+                                                🥳
+                                            </span>
+                                            :
+                                            <span role="img" aria-label="Heart">
+                                                😣
+                                            </span>
+                                        }
+                                        <Header style={{ 'font-size': '50px' }} content={correct ? 'Correct' : 'Wrong'} />
+                                    </Segment>
+                                }
+                                <Header style={{ 'font-size': '70px', 'margin-top': '100px', 'color': 'white' }} content={`${correct ? '+' : ''} ${score} points`} />
+                                <h1>Total points: {totalScore}</h1>
+                                <Button icon='right arrow' labelPosition='right' size='huge' color='pink' content='Next question' onClick={() => handleNextQuestion()} /><br />
+                            </Container>
+                        </Segment>
                     )
                     :
                     <>
@@ -110,59 +176,8 @@ export default observer(function Play() {
                     </>
                 )
                 :
-                // <Segment inverted textAlign='center' vertical className='masthead'>
-                //     <Container >
-                //         <div style={{ textAlign: 'center' }}>
-                //             <Header as='h2' content={`Get Ready, ${userStore.user?.firstName}`} />
-                //             <Header as='h1' content='Starting in...' />
-                //             <div style={{ fontSize: '100px' }}>
-                //                 <Header content={seconds} />
-                //             </div>
-                //         </div>
-                //     </Container>
-                // </Segment>
-                <StartTimer expiryTimestamp={time} onExpire={handleStart} />
+                <StartTimer expiryTimestamp={startTime} onExpire={handleStart} />
             }
         </>
     )
 })
-
-
-{/* <>
-            {
-                start
-                    ?
-                    (!gameOver
-                        ?
-                        (!questionOver
-                            ?
-                            <>
-                                <span>Question {currentQuestion + 1}/{quiz.questions.length}</span>
-                                <h1>{quiz.questions[currentQuestion].text}</h1>
-                                <hr />
-                                <div>
-                                    <Button fluid color='red' content={quiz.questions[currentQuestion].answers[0].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[0].isCorrect)} /><br />
-                                    <Button fluid color='green' content={quiz.questions[currentQuestion].answers[1].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[1].isCorrect)} /><br />
-                                    <Button fluid color='purple' content={quiz.questions[currentQuestion].answers[2].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[2].isCorrect)} /><br />
-                                    <Button fluid color='yellow' content={quiz.questions[currentQuestion].answers[3].text} onClick={() => handleAnswerOptionClick(quiz.questions[currentQuestion].answers[3].isCorrect)} />
-                                </div>
-                            </>
-                            :
-                            <>
-                                <span>{correct ? 'Correct' : 'Wrong'}</span>
-                                <h1>{score} points</h1>
-                                <h1>Total points: {totalScore}</h1>
-                                <Button fluid color='red' content='Next question' onClick={() => handleNextQuestion()} /><br />
-                            </>
-                        )
-                        :
-                        <>
-                            <h1>Finished</h1>
-                            <h1>You earned {totalScore} points</h1>
-                            <Button as={Link} to={'/community'} content='Go to homepage' />
-                        </>
-                    )
-                    :
-                    <StartGame setStart={setStart} />
-            }
-        </> */}
