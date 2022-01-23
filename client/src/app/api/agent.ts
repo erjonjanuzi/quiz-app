@@ -11,7 +11,7 @@ const sleep = (delay: number) => {
     })
 }
 
-axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.baseURL = 'http://localhost:4000/api';
 
 axios.interceptors.request.use(config => {
     const token = store.commonStore.token;
@@ -69,14 +69,15 @@ const requests = {
 }
 
 const Account = {
-    current: () => requests.get<User>('/user/current'),
-    login: (user: UserFormValues) => requests.post<User>('/user/login', user),
-    register: (user: UserFormValues) => requests.post<User>('/user/register', user),
+    current: () => requests.get<User>('/users/current'),
+    login: (user: UserFormValues) => requests.post<User>('/users/login', user),
+    register: (user: UserFormValues) => requests.post<User>('/users/register', user),
 }
 
 const Quizzes = {
-    all: () => requests.get<Quiz[]>('/quiz/all'),
+    all: () => requests.get<Quiz[]>('/quiz'),
     details: (id: string) => requests.get<Quiz>(`/quiz/${id}`),
+    userQuizzes: () => requests.get<Quiz[]>(`/quiz/userQuizzes`)
 }
 
 const agent = {

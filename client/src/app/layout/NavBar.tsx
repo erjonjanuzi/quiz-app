@@ -15,7 +15,7 @@ export default observer(function NavBar() {
                 </Menu.Item>
                 <Menu.Item icon='star' as={NavLink} to='/community' name='Community' />
                 <Menu.Item icon='heart' as={NavLink} to='/favorited' name='Favorited' />
-                <Menu.Item icon='list' as={NavLink} to='/favorited' name='My Library' />
+                <Menu.Item icon='list' as={NavLink} to='/library' name='My Library' />
                 <Menu.Item position='right'>
                     <Button as={NavLink} to='/' positive content='Create Quiz' fluid />
                 </Menu.Item>

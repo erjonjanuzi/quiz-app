@@ -69,7 +69,7 @@ export default class QuizStore {
     }
 
     private setQuiz = (quiz: Quiz) => {
-        this.quizRegistry.set(quiz._id!, quiz);
+        this.quizRegistry.set(quiz.id!, quiz);
     }
 
     private getQuiz = (id: string) => {
@@ -82,6 +82,20 @@ export default class QuizStore {
 
     clearSelectedQuiz = () => {
         this.selectedQuiz = undefined;
+    }
+
+    loadUserQuizzes = async (userId: string) => {
+        this.loadingInitial = true;
+        try {
+            const quizzes = await agent.Quizzes.all();
+            quizzes.forEach(quiz => {
+                this.setQuiz(quiz);
+            })
+            this.setLoadingInitial(false);
+        } catch (error) {
+            console.log(error);
+            this.setLoadingInitial(false);
+        }
     }
 
     // createActivity = async (activity: ActivityFormValues) => {

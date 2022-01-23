@@ -1,10 +1,14 @@
 export interface Quiz {
-    _id?: string;
+    id?: string;
     name: string;
     description: string;
     subject: string;
     timesPlayed: number;
-    questions: Question[]
+    questions: Question[],
+    isPublic: boolean,
+    creator: Creator,
+    createdAt: Date,
+    leaderboard: any[];
 }
 
 interface Question {
@@ -17,4 +21,11 @@ interface Question {
 interface Answer {
     text: string;
     isCorrect: boolean;
+}
+
+interface Creator {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
 }

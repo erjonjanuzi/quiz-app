@@ -11,7 +11,7 @@ interface Props {
 export default observer(function QuizCard({ quiz }: Props) {
 
     return (
-        <Card link as={Link} to={`/quiz/view/${quiz._id}`}>
+        <Card link as={Link} to={`/quiz/view/${quiz.id}`}>
             <Image src={`/assets/subjects/${quiz.subject}.jpeg`} wrapped ui={false} />
             <Card.Content>
                 <Card.Header>{quiz.name}</Card.Header>
@@ -27,7 +27,7 @@ export default observer(function QuizCard({ quiz }: Props) {
                 Played {quiz.timesPlayed} times
                 <Button
                     as={Link}
-                    to={`/quiz/play/${quiz._id}`}
+                    to={`/quiz/play/${quiz.id}`}
                     color='pink'
                     floated='right'
                     content='Play'

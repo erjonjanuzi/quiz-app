@@ -1,30 +1,29 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
-import quizRoutes from './routes/quizRoutes';
-import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
-import userRoutes from './routes/userRoutes';
+import express from 'express';
+import { json } from 'body-parser';
 import cors from 'cors';
-import User from './modules/user';
+import { config } from 'dotenv';
+import 'express-async-errors';
 
-dotenv.config();
+config(); //dotenv config
 
-const app: Application = express();
+import { userRoutes } from './api/userRoutes';
+import { quizRoutes } from './api/quizRoutes';
 
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
+import { NotFoundError } from './common/errors/not-found-error';
+import { errorHandler } from './common/middlewares/error-handler';
+
+const app = express();
+
+app.use(json());
 app.use(cors());
 
-// Default routes
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-    res.send(`App name: ${process.env.APP_NAME}`);
+app.use(userRoutes);
+app.use(quizRoutes);
+
+app.all('*', async (req, res, next) => {
+    throw new NotFoundError();
 });
 
-// Quiz Routes
-app.use('/quiz', quizRoutes); 
+app.use(errorHandler);
 
-// User routes
-app.use('/user', userRoutes);
-
-app.listen(process.env.SERVER_PORT, () =>
-    console.log(`Server running on localhost:${process.env.SERVER_PORT}`)
-);
+export { app }

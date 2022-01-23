@@ -15,7 +15,7 @@ export default observer(function QuizSection() {
     return (
         <>
             <Card.Group itemsPerRow={4} stackable>
-                {quizStore.quizzes.map(quiz => <QuizCard key={quiz._id} quiz={quiz} />)}
+                {quizStore.quizzes.map(quiz => <QuizCard key={quiz.id} quiz={quiz} />)}
             </Card.Group>
         </>
     )

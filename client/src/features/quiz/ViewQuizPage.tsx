@@ -38,9 +38,9 @@ export default observer(function ViewQuizPage() {
                                 </Card.Description>
                                 <br />
                                 <Icon name='user' />
-                                <span>Created by Creator</span><br />
+                                <span>{`Created by ${selectedQuiz.creator.firstName} ${selectedQuiz.creator.lastName}`}</span><br />
                                 <Icon name='calendar' />
-                                <span>27 December 2021</span>
+                                <span>{selectedQuiz.createdAt.toString().split('T')[0]}</span>
                             </Card.Content>
                             <Card.Content>
                                 <Icon name='play' />
@@ -64,7 +64,7 @@ export default observer(function ViewQuizPage() {
                             </Statistic>
                             <Button
                                 as={Link}
-                                to={`/quiz/play/${selectedQuiz._id}`}
+                                to={`/quiz/play/${selectedQuiz.id}`}
                                 color='pink'
                                 icon='play'
                                 floated='right'
