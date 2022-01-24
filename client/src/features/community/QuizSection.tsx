@@ -10,7 +10,7 @@ export default observer(function QuizSection() {
 
     useEffect(() => {
         quizStore.loadQuizzes();
-    }, [quizStore.quizRegistry])
+    }, [quizStore.quizRegistry, quizStore])
 
     return (
         <>

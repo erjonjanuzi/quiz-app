@@ -14,6 +14,7 @@ import PrivateRoute from './PrivateRoute';
 import Main from '../../features/community/Main';
 import { observer } from 'mobx-react-lite';
 import MyLibrary from '../../features/library/MyLibrary';
+import CreateQuiz from '../../features/library/CreateQuiz';
 
 function App() {
   const { commonStore, userStore } = useStore();
@@ -42,6 +43,7 @@ function App() {
               <Switch>
                 <PrivateRoute path='/community' component={Main} />
                 <PrivateRoute path='/quiz/view/:id' component={ViewQuizPage} />
+                <PrivateRoute path='/quiz/create' component={CreateQuiz} />
                 <PrivateRoute path='/library' component={MyLibrary} />
               </Switch>
             </Container>

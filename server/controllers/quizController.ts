@@ -45,9 +45,7 @@ export const getAllQuizzes = async (req: Request, res: Response) => {
 }
 
 export const getUserQuizzes = async (req: Request, res: Response) => {
-    // Currently does not work
-    const id = new mongoose.Types.ObjectId(req.currentUser?.id);
-    const quizzes = await Quiz.find({ creator: id });
+    const quizzes = await Quiz.find({ creator: req.currentUser?.id });
 
     res.send(quizzes);
 }

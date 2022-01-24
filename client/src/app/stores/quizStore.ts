@@ -8,6 +8,8 @@ export default class QuizStore {
     editMode = false;
     loading = false;
     loadingInitial = false;
+    quizLibrary = new Map<string, Quiz>();
+    tempQuestions: any[] = [];
 
     constructor() {
         makeAutoObservable(this)
@@ -30,6 +32,10 @@ export default class QuizStore {
 
     get quizzes() {
         return Array.from(this.quizRegistry.values());
+    }
+
+    get userQuizzes(){
+        return Array.from(this.quizLibrary.values());
     }
 
     loadQuizzes = async () => {
@@ -84,12 +90,12 @@ export default class QuizStore {
         this.selectedQuiz = undefined;
     }
 
-    loadUserQuizzes = async (userId: string) => {
+    loadUserQuizzes = async () => {
         this.loadingInitial = true;
         try {
-            const quizzes = await agent.Quizzes.all();
+            const quizzes = await agent.Quizzes.userQuizzes();
             quizzes.forEach(quiz => {
-                this.setQuiz(quiz);
+                this.quizLibrary.set(quiz.id!, quiz);
             })
             this.setLoadingInitial(false);
         } catch (error) {

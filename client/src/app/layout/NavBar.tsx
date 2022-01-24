@@ -17,7 +17,7 @@ export default observer(function NavBar() {
                 <Menu.Item icon='heart' as={NavLink} to='/favorited' name='Favorited' />
                 <Menu.Item icon='list' as={NavLink} to='/library' name='My Library' />
                 <Menu.Item position='right'>
-                    <Button as={NavLink} to='/' positive content='Create Quiz' fluid />
+                    <Button as={NavLink} to='/quiz/create' positive content='Create Quiz' fluid />
                 </Menu.Item>
                 <Menu.Item >
                     <Image src={'/assets/user.png'} avatar spaced='right' />
