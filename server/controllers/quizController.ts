@@ -3,6 +3,7 @@ import { BadRequestError } from '../common/errors/bad-request-error';
 import { NotAuthorizedError } from '../common/errors/not-authorized-error';
 import { Quiz } from '../models/quiz';
 import mongoose from 'mongoose';
+import { NotFoundError } from '../common/errors/not-found-error';
 
 export const create = async (req: Request, res: Response) => {
     const { name, subject, description, questions } = req.body;
@@ -69,6 +70,50 @@ export const deleteQuiz = async (req: Request, res: Response) => {
         res.status(400).send('Something went wrong');
 }
 
+export const updateQuiz = async (req: Request, res: Response) => {
+    const { name, subject, description } = req.body;
+
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        throw new NotFoundError();
+    }
+
+    if (quiz.creator.toString() !== req.currentUser?.id) {
+        throw new NotAuthorizedError();
+    }
+
+    quiz.set({
+        name,
+        subject,
+        description
+    });
+
+    await quiz.save();
+
+    res.status(200).send(quiz);
+}
+
+export const changeVisibility = async (req: Request, res: Response) => {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        throw new NotFoundError();
+    }
+
+    if (quiz.creator.toString() !== req.currentUser?.id) {
+        throw new NotAuthorizedError();
+    }
+
+    quiz.set({
+        isPublic: !quiz.isPublic
+    });
+
+    await quiz.save();
+
+    res.status(200).send({ isPublic: quiz.isPublic });
+}
+
 export const addQuestion = async (req: Request, res: Response) => {
     const quiz = await Quiz.findById(req.params.id);
 
@@ -81,6 +126,26 @@ export const addQuestion = async (req: Request, res: Response) => {
     }
 
     quiz.questions.push(req.body);
+
+    await quiz.save();
+
+    res.send(quiz);
+}
+
+export const removeQuestion = async (req: Request, res: Response) => {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        throw new NotFoundError();
+    }
+
+    if (quiz.creator.toString() !== req.currentUser?.id) {
+        throw new NotAuthorizedError();
+    }
+
+    const { index } = req.params;
+
+    quiz.questions.splice(parseInt(index), 1);
 
     await quiz.save();
 

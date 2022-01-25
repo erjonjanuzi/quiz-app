@@ -77,7 +77,13 @@ const Account = {
 const Quizzes = {
     all: () => requests.get<Quiz[]>('/quiz'),
     details: (id: string) => requests.get<Quiz>(`/quiz/${id}`),
-    userQuizzes: () => requests.get<Quiz[]>(`/quiz/userQuizzes`)
+    userQuizzes: () => requests.get<Quiz[]>(`/quiz/userQuizzes`),
+    create: (quiz: any) => requests.post('/quiz', quiz),
+    update: (id: string, quiz: any) => requests.put(`/quiz/${id}`, quiz),
+    changeVisibility: (id: string) => requests.put(`/quiz/changeVisibility/${id}`, {}),
+    addQuestion: (id: string, question: any) => requests.put(`/quiz/addQuestion/${id}`, question),
+    removeQuestion: (id: string, index: number) => requests.put(`/quiz/removeQuestion/${index}/${id}`, {}),
+    delete: (id: string) => requests.del(`/quiz/${id}`),
 }
 
 const agent = {

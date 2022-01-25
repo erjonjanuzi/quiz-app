@@ -70,6 +70,7 @@ export default observer(function ViewQuizPage() {
                                 floated='right'
                                 content='Play'
                                 size='huge'
+                                disabled={selectedQuiz.questions.length === 0}
                             />
                         </Segment>
                         <Segment>

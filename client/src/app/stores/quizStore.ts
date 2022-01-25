@@ -1,6 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Quiz } from "../models/quiz";
+import { toast } from "react-toastify";
 
 export default class QuizStore {
     quizRegistry = new Map<string, Quiz>();
@@ -34,7 +35,7 @@ export default class QuizStore {
         return Array.from(this.quizRegistry.values());
     }
 
-    get userQuizzes(){
+    get userQuizzes() {
         return Array.from(this.quizLibrary.values());
     }
 
@@ -104,90 +105,98 @@ export default class QuizStore {
         }
     }
 
-    // createActivity = async (activity: ActivityFormValues) => {
-    //     const user = store.userStore.user;
-    //     const attendee = new Profile(user!);
-    //     try {
-    //         await agent.Activities.create(activity);
-    //         const newActivity = new Activity(activity);
-    //         newActivity.hostUsername = user!.username;
-    //         newActivity.attendees = [attendee];
-    //         this.setActivity(newActivity);
-    //         runInAction(() => {
-    //             this.selectedActivity = newActivity;
-    //         })
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    createQuiz = async (quiz: any) => {
+        try {
+            quiz.questions = this.tempQuestions;
+            await agent.Quizzes.create(quiz);
+            this.tempQuestions = [];
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // updateActivity = async (activity: ActivityFormValues) => {
-    //     try {
-    //         await agent.Activities.update(activity);
-    //         runInAction(() => {
-    //             if (activity.id) {
-    //                 let updatedActivity = {...this.getActivity(activity.id), ...activity}
-    //                 this.activityRegistry.set(activity.id, updatedActivity as Activity);
-    //                 this.selectedActivity = updatedActivity as Activity;
-    //             } 
-    //         })
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    updateQuiz = async (id: string, quiz: any) => {
+        try {
+            const updatedQuiz = await agent.Quizzes.update(id, quiz) as Quiz;
+            runInAction(() => {
+                this.selectedQuiz = updatedQuiz;
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // deleteActivity = async (id: string) => {
-    //     this.loading = true;
-    //     try {
-    //         await agent.Activities.delete(id);
-    //         runInAction(() => {
-    //             this.activityRegistry.delete(id);
-    //             this.loading = false;
-    //         })
-    //     } catch (error) {
-    //         console.log(error);
-    //         runInAction(() => {
-    //             this.loading = false;
-    //         })
-    //     }
-    // }
+    changeVisibility = async (id: string) => {
+        try {
+            const result: any = await agent.Quizzes.changeVisibility(id);
+            runInAction(() => {
+                if (this.selectedQuiz) {
+                    this.selectedQuiz.isPublic = result.isPublic as boolean;
+                }
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // updateAttendance = async () => {
-    //     const user = store.userStore.user;
-    //     this.loading = true;
-    //     try {
-    //         await agent.Activities.attend(this.selectedActivity!.id);
-    //         runInAction(() => {
-    //             if (this.selectedActivity?.isGoing) {
-    //                 this.selectedActivity.attendees = 
-    //                     this.selectedActivity.attendees?.filter(a => a.username !== user?.username);
-    //                 this.selectedActivity.isGoing = false;
-    //             } else {
-    //                 const attendee = new Profile(user!);
-    //                 this.selectedActivity?.attendees?.push(attendee);
-    //                 this.selectedActivity!.isGoing = true;
-    //             }
-    //             this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!)
-    //         })
-    //     } catch (error) {
-    //         console.log(error);
-    //     } finally {
-    //         runInAction(() => this.loading = false);
-    //     }
-    // }
+    addQuestion = async (id: string, question: any) => {
+        try {
+            const questionObj = {
+                text: question.text,
+                points: question.points,
+                time: question.time,
+                answers: [
+                    {
+                        text: question.answer1,
+                        isCorrect: question.correct === 'a'
+                    },
+                    {
+                        text: question.answer2,
+                        isCorrect: question.correct === 'b'
+                    },
+                    {
+                        text: question.answer3,
+                        isCorrect: question.correct === 'c'
+                    },
+                    {
+                        text: question.answer4,
+                        isCorrect: question.correct === 'd'
+                    }
+                ]
+            }
+            const quiz = await agent.Quizzes.addQuestion(id, questionObj) as Quiz;
+            runInAction(() => {
+                this.selectedQuiz = quiz;
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // cancelActivityToggle = async () => {
-    //     this.loading = true;
-    //     try {
-    //         await agent.Activities.attend(this.selectedActivity!.id);
-    //         runInAction(() => {
-    //             this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
-    //             this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
-    //         })
-    //     } catch (error) {
-    //         console.log(error);
-    //     } finally {
-    //         runInAction(() => this.loading = false);
-    //     }
-    // }
+    removeQuestion = async (id: string, index: number) => {
+        try {
+            if (this.selectedQuiz?.isPublic && this.selectedQuiz.questions.length === 1) {
+                throw new Error('Minimum 1 question is required for a public quiz')
+            }
+            const quiz = await agent.Quizzes.removeQuestion(id, index) as Quiz;
+            runInAction(() => {
+                this.selectedQuiz = quiz;
+            })
+        } catch (error: any) {
+            toast.error(error.message);
+        }
+    }
+
+    deleteQuiz = async (id: string) => {
+        try {
+            await agent.Quizzes.delete(id);
+            runInAction(() => {
+                this.loadUserQuizzes();
+                this.loadQuizzes();
+                this.selectedQuiz = undefined;
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }

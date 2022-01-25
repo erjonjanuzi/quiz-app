@@ -23,8 +23,6 @@ export default observer(function NavBar() {
                     <Image src={'/assets/user.png'} avatar spaced='right' />
                     <Dropdown pointing='top left' text={user?.firstName}>
                         <Dropdown.Menu>
-                            <Dropdown.Item as={Link} to={`/profiles/${user}`}
-                                text='My Profile' icon='user' />
                             <Dropdown.Item onClick={logout} text='Logout' icon='power' />
                         </Dropdown.Menu>
                     </Dropdown>

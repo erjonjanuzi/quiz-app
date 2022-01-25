@@ -1,7 +1,7 @@
 import { ErrorMessage, Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Header, Icon, Label, Segment } from 'semantic-ui-react';
+import { Button, Divider, Grid, Header, Icon, Label, Message, Segment } from 'semantic-ui-react';
 import MySelectInput from '../../app/common/form/MySelectInput';
 import MyTextArea from '../../app/common/form/MyTextArea';
 import MyTextInput from '../../app/common/form/MyTextInput';
@@ -11,6 +11,8 @@ import { pointsOptions } from '../../app/common/options/pointsOptions';
 import { timeOptions } from '../../app/common/options/timeOptions';
 import { correctOptions } from '../../app/common/options/correctOptions';
 import { useStore } from '../../app/stores/store';
+import { history } from '../..';
+import * as Yup from 'yup';
 
 export default observer(function CreateQuiz() {
     const { quizStore } = useStore();
@@ -45,8 +47,25 @@ export default observer(function CreateQuiz() {
     }
 
     const handleRemoveQuestion = (index: number) => {
-
+        quizStore.tempQuestions.splice(index, 1);
     }
+
+    const quizValidationSchema = Yup.object({
+        name: Yup.string().required('Question name is required'),
+        description: Yup.string().required('Provide a short description'),
+        subject: Yup.string().required('Choose a subject'),
+    })
+
+    const questionsValidationSchema = Yup.object({
+        text: Yup.string().required('Question text is required'),
+        points: Yup.string().required('Points are required'),
+        time: Yup.string().required('Time is required'),
+        answer1: Yup.string().required('Answer required'),
+        answer2: Yup.string().required('Answer required'),
+        answer3: Yup.string().required('Answer required'),
+        answer4: Yup.string().required('Answer required'),
+        correct: Yup.string().required('Choose the correct answer'),
+    })
 
     useEffect(() => {
 
@@ -61,8 +80,8 @@ export default observer(function CreateQuiz() {
                     <Segment>
                         <Formik
                             initialValues={{ name: '', description: '', subject: '', questions: [], error: null }}
-                            onSubmit={(values) => console.log(values)}
-                        // onSubmit={(values, { setErrors }) => userStore.login(values).catch((error: any) => setErrors({ error: error.response.data }))}
+                            onSubmit={(values, { setErrors }) => quizStore.createQuiz(values).then(() => history.push('/library')).catch(error => setErrors({ error: error.response.data }))}
+                            validationSchema={quizValidationSchema}
                         >
                             {({ handleSubmit, isValid, dirty, isSubmitting, errors }) => (
                                 <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
@@ -74,22 +93,25 @@ export default observer(function CreateQuiz() {
                                             <Segment secondary color='pink' clearing>
                                                 <Label content={index + 1} circular size='small' />
                                                 <Header sub content={question.text} style={{ "display": "inline", "margin-left": "10px" }} />
-                                                <Button icon='trash' basic color='red' floated='right' onClick={() => handleRemoveQuestion(index)} />
+                                                <Button type='button' icon='trash' basic color='red' floated='right' onClick={() => handleRemoveQuestion(index)} />
                                                 <Header sub content={`${question.points} points`} floated='right' color='green' />
                                             </Segment>
                                         </>
 
                                     })}
-                                    <Button content='Add question' icon='plus' labelPosition='left' fluid color='green' basic type='button'
+                                    {quizStore.tempQuestions.length === 0 &&
+                                        <Message content='Minimum 1 question required' color='red'/>}
+                                    <Button content='Add question' icon='plus' labelPosition='left' fluid color='blue' basic type='button'
                                         onClick={() => setAddQuestion(true)}
                                     />
                                     <ErrorMessage
                                         name='error' render={() =>
                                             <Label style={{ marginBottom: 10 }} basic color='red' content={errors.error} />}
                                     />
+                                    <Divider />
                                     <Button
-                                        disabled={isSubmitting || !dirty || !isValid}
-                                        positive type='submit' content='Submit' />
+                                        disabled={isSubmitting || !dirty || !isValid || quizStore.tempQuestions.length < 1}
+                                         type='submit' content='Save' color='pink' />
                                 </Form>
                             )}
                         </Formik>
@@ -99,8 +121,9 @@ export default observer(function CreateQuiz() {
                     {addQuestion &&
                         <Segment>
                             <Formik
-                                initialValues={{ text: '', points: '', time: '', correct: '', error: null }}
+                                initialValues={{ text: '', points: '', time: '', error: null }}
                                 onSubmit={(values) => handleAddQuestion(values)}
+                                validationSchema={questionsValidationSchema}
                             >
                                 {({ handleSubmit, isSubmitting, errors, dirty, isValid }) => (
                                     <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
@@ -141,11 +164,17 @@ export default observer(function CreateQuiz() {
                                                 </Grid.Column>
                                             </Grid.Row>
                                         </Grid>
+                                        <br />
                                         <MySelectInput name='correct' placeholder='Select correct answer' options={correctOptions} />
+                                        <ErrorMessage
+                                            name='error' render={() =>
+                                                <Label style={{ marginBottom: 10 }} basic color='red' content={errors.error} />}
+                                        />
+                                        <Divider />
                                         <Button
                                             disabled={isSubmitting || !dirty || !isValid}
                                             loading={isSubmitting}
-                                            positive type='submit' content='Add' />
+                                            color='pink' type='submit' content='Add question' />
                                         <Button loading={isSubmitting} basic content='Cancel' type='cancel' onClick={() => setAddQuestion(false)} />
                                     </Form>
                                 )}
@@ -154,7 +183,6 @@ export default observer(function CreateQuiz() {
                     }
                 </Grid.Column>
             </Grid>
-
         </>
     )
 })
