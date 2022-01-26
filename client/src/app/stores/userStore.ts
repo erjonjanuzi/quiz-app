@@ -6,7 +6,7 @@ import { User, UserFormValues } from "../models/user";
 import { store } from "./store";
 
 export default class UserStore {
-    user: User | null = null;
+    user: any | null = null;
 
     constructor() {
         makeAutoObservable(this)

@@ -24,6 +24,10 @@ export default observer(function CreateQuiz() {
             text: values.text,
             points: values.points,
             time: values.time,
+            resultHistory: {
+                correct: 0,
+                incorrect: 0
+            },
             answers: [
                 {
                     text: values.answer1,

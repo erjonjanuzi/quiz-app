@@ -4,6 +4,7 @@ import { NotAuthorizedError } from '../common/errors/not-authorized-error';
 import { Quiz } from '../models/quiz';
 import mongoose from 'mongoose';
 import { NotFoundError } from '../common/errors/not-found-error';
+import { User } from '../models/user';
 
 export const create = async (req: Request, res: Response) => {
     const { name, subject, description, questions } = req.body;
@@ -148,6 +149,51 @@ export const removeQuestion = async (req: Request, res: Response) => {
     quiz.questions.splice(parseInt(index), 1);
 
     await quiz.save();
+
+    res.send(quiz);
+}
+
+export const saveResult = async (req: Request, res: Response) => {
+    const quiz = await Quiz.findById(req.params.id);
+
+    if (!quiz) {
+        throw new NotFoundError();
+    }
+
+    const { score } = req.body;
+
+    quiz.timesPlayed++;
+
+    // const answerHistory = ['correct', 'correct', 'incorrect'];
+    const answerHistory: string[] = req.body.answerHistory;
+    const tempQuestions = quiz.questions;
+    for (let answer in answerHistory) {
+        tempQuestions[answer].resultHistory[answerHistory[answer]]++;
+    }
+
+    const existingLeaderboardUser = quiz.leaderboard.find(element => element.user.id === req.currentUser?.id);
+    if (existingLeaderboardUser) {
+        const index = quiz.leaderboard.indexOf(existingLeaderboardUser);
+        if (quiz.leaderboard[index].score < score)
+            quiz.leaderboard[index].score = score;
+    } else {
+        const user = await User.findById(req.currentUser!.id);
+        if (!user) return;
+        quiz.leaderboard.push({
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                id: user.id
+            },
+            score: score
+        });
+    }
+
+    quiz.leaderboard.sort((a, b) => b.score - a.score);
+
+    await quiz.save();
+
+    await Quiz.findByIdAndUpdate(quiz.id, {questions: tempQuestions});
 
     res.send(quiz);
 }

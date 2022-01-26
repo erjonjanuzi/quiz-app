@@ -7,11 +7,12 @@ import { useStore } from '../../app/stores/store';
 import QuestionTimer from './QuestionTimer';
 import StartTimer from './StartTimer';
 import useSound from 'use-sound';
+import Leaderboard from './Leaderboard';
 
 export default observer(function Play() {
     const { quizStore } = useStore();
     const { selectedQuiz: quiz, loadQuiz, loadingInitial, streak, increaseStreak, restartStreak,
-        increaseCorrectCount, questionsCorrectCount } = quizStore;
+        increaseCorrectCount, questionsCorrectCount, answerHistory } = quizStore;
     const { id } = useParams<{ id: string }>();
 
     const [start, setStart] = useState(false);
@@ -42,8 +43,8 @@ export default observer(function Play() {
     }
 
     const handleAnswerOptionClick = (isCorrect: boolean) => {
+        answerHistory.push(isCorrect ? 'correct' : 'incorrect');
         setCorrect(isCorrect);
-        setQuestionOver(true);
 
         if (isCorrect) {
             increaseStreak();
@@ -52,6 +53,7 @@ export default observer(function Play() {
         else {
             restartStreak();
         }
+        setQuestionOver(true);
         stop();
         playSubmitAnswer();
     }
@@ -72,7 +74,8 @@ export default observer(function Play() {
         }
     }
 
-    const handleQuizEnd = () => {
+    const handleQuizEnd = async () => {
+        await quizStore.saveResult(id, { score: totalScore, answerHistory }).then(() => console.log('Saved results'));
         setGameOver(true);
         stop();
     }
@@ -95,7 +98,7 @@ export default observer(function Play() {
         if (quiz && currentQuestion + 1 === quiz?.questions.length) {
             setLastQuestion(true);
         }
-    }, [questionOver, score, start])
+    }, [questionOver, score, start, quiz])
 
     if (loadingInitial || !quiz) return <LoadingComponent />;
 
@@ -202,7 +205,7 @@ export default observer(function Play() {
                     :
                     <Segment inverted textAlign='center' vertical className='questions'>
                         <Container>
-                            <div style={{ "marginTop": "100px" }}>
+                            <div style={{ "marginTop": "50px" }}>
                                 <span role="img" aria-label="Heart" id='finished-span'>
                                     {questionsCorrectCount === 0 && '💩'}
                                     {questionsCorrectCount === quiz.questions.length && '🌟'}
@@ -218,11 +221,16 @@ export default observer(function Play() {
                             <br />
                             <Label size='huge' basic color='purple' circular><h1 style={{ "fontSize": "30px", "padding": "0px 30px" }}>
                                 {questionsCorrectCount} correct out of {quiz.questions.length}</h1></Label>
-                            <h1>Leaderboard goes here</h1>
+                                <br /><br />
+                            <div style={{"display": "flex", "flexDirection": "column", "justifyContent": "center", "alignItems": "center"}}>
+                                <h1>Top 5 all time</h1>
+                                <Leaderboard id={id} />
+                            </div>
+                            <br /><br />
                             <Button.Group size='large'>
                                 <Button color='pink' as={Link} to='/community' onClick={() => restartStreak()}>Homepage</Button>
                                 <Button.Or />
-                                <Button positive onClick={() => window.location.reload()} >Replay quiz</Button>
+                                <Button positive onClick={() => window.location.reload()}>Replay quiz</Button>
                             </Button.Group>
                         </Container>
                     </Segment>
@@ -233,3 +241,4 @@ export default observer(function Play() {
         </>
     )
 })
+

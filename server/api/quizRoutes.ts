@@ -2,7 +2,7 @@ import express from 'express';
 import { currentUser } from '../common/middlewares/current-user';
 import { requireAuth } from '../common/middlewares/require-auth';
 import { validateRequest } from '../common/middlewares/validate-request';
-import { addQuestion, changeVisibility, create, deleteQuiz, getAllQuizzes, getQuiz, getUserQuizzes, removeQuestion, updateQuiz } from '../controllers/quizController';
+import { addQuestion, changeVisibility, create, deleteQuiz, getAllQuizzes, getQuiz, getUserQuizzes, removeQuestion, saveResult, updateQuiz } from '../controllers/quizController';
 
 const router = express.Router();
 
@@ -17,6 +17,7 @@ router.delete('/api/quiz/:id', currentUser, requireAuth, validateRequest, delete
 
 router.post('/api/quiz', currentUser, requireAuth, validateRequest, create);
 
+router.put('/api/quiz/saveResult/:id', currentUser, requireAuth, validateRequest, saveResult)
 
 router.put('/api/quiz/changeVisibility/:id', currentUser, requireAuth, validateRequest, changeVisibility);
 

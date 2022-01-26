@@ -8,14 +8,25 @@ export interface Quiz {
     isPublic: boolean,
     creator: Creator,
     createdAt: Date,
-    leaderboard: any[];
+    leaderboard: {
+        user: {
+            firstName: string,
+            lastName: string,
+            id: string
+        },
+        score: number
+    }[];
 }
 
 interface Question {
     text: string;
     points: number;
     answers: Answer[];
-    time: number
+    time: number;
+    resultHistory: {
+        correct: number,
+        incorrect: number
+    }
 }
 
 interface Answer {

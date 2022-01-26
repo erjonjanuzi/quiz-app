@@ -13,6 +13,7 @@ export default class QuizStore {
     tempQuestions: any[] = [];
     streak = 0;
     questionsCorrectCount = 0;
+    answerHistory: string[] = [];
 
     constructor() {
         makeAutoObservable(this)
@@ -66,6 +67,7 @@ export default class QuizStore {
             })
             this.restartCorrectCount();
             this.restartStreak();
+            this.answerHistory = [];
             this.setLoadingInitial(false);
         } catch (error) {
             console.log(error);
@@ -204,6 +206,17 @@ export default class QuizStore {
             })
         } catch (error: any) {
             toast.error(error.message);
+        }
+    }
+
+    saveResult = async (id: string, body: { score: number, answerHistory: string[] }) => {
+        try {
+            const quiz = await agent.Quizzes.saveResult(id, body) as Quiz;
+            runInAction(() => {
+                this.selectedQuiz = quiz;
+            })
+        } catch (error) {
+            console.log(error);
         }
     }
 

@@ -83,6 +83,7 @@ const Quizzes = {
     changeVisibility: (id: string) => requests.put(`/quiz/changeVisibility/${id}`, {}),
     addQuestion: (id: string, question: any) => requests.put(`/quiz/addQuestion/${id}`, question),
     removeQuestion: (id: string, index: number) => requests.put(`/quiz/removeQuestion/${index}/${id}`, {}),
+    saveResult: (id: string, body: {score: number, answerHistory: string[]}) => requests.put(`/quiz/saveResult/${id}`, body),
     delete: (id: string) => requests.del(`/quiz/${id}`),
 }
 
