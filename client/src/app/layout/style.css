@@ -189,3 +189,7 @@ body {
 .streak span {
   font-size: 30px;
 }
+
+#finished-span {
+  font-size: 100px;
+}

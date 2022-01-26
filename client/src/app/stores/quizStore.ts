@@ -11,6 +11,8 @@ export default class QuizStore {
     loadingInitial = false;
     quizLibrary = new Map<string, Quiz>();
     tempQuestions: any[] = [];
+    streak = 0;
+    questionsCorrectCount = 0;
 
     constructor() {
         makeAutoObservable(this)
@@ -39,6 +41,22 @@ export default class QuizStore {
         return Array.from(this.quizLibrary.values());
     }
 
+    increaseStreak = () => {
+        this.streak++;
+    }
+
+    restartStreak = () => {
+        this.streak = 0;
+    }
+
+    increaseCorrectCount = () => {
+        this.questionsCorrectCount++;
+    }
+
+    restartCorrectCount = () => {
+        this.questionsCorrectCount = 0;
+    }
+
     loadQuizzes = async () => {
         this.loadingInitial = true;
         try {
@@ -46,6 +64,8 @@ export default class QuizStore {
             quizzes.forEach(quiz => {
                 this.setQuiz(quiz);
             })
+            this.restartCorrectCount();
+            this.restartStreak();
             this.setLoadingInitial(false);
         } catch (error) {
             console.log(error);

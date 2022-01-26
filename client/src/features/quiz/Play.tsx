@@ -10,7 +10,8 @@ import useSound from 'use-sound';
 
 export default observer(function Play() {
     const { quizStore } = useStore();
-    const { selectedQuiz: quiz, loadQuiz, loadingInitial } = quizStore;
+    const { selectedQuiz: quiz, loadQuiz, loadingInitial, streak, increaseStreak, restartStreak,
+        increaseCorrectCount, questionsCorrectCount } = quizStore;
     const { id } = useParams<{ id: string }>();
 
     const [start, setStart] = useState(false);
@@ -22,7 +23,6 @@ export default observer(function Play() {
     const [totalScore, setTotalScore] = useState(0);
     const [timerEnded, setTimerEnded] = useState(false);
     const [lastQuestion, setLastQuestion] = useState(false);
-    const [streak, setStreak] = useState(0);
 
     const [play, { stop }] = useSound('/assets/sounds/music.mp3', {
         volume: 1
@@ -44,6 +44,14 @@ export default observer(function Play() {
     const handleAnswerOptionClick = (isCorrect: boolean) => {
         setCorrect(isCorrect);
         setQuestionOver(true);
+
+        if (isCorrect) {
+            increaseStreak();
+            increaseCorrectCount();
+        }
+        else {
+            restartStreak();
+        }
         stop();
         playSubmitAnswer();
     }
@@ -80,7 +88,7 @@ export default observer(function Play() {
         if (correct) {
             setScore(quiz!.questions[currentQuestion].points);
             setTotalScore(totalScore + score);
-        } 
+        }
         if (quiz) {
             questionTimer.setSeconds(questionTimer.getSeconds() + quiz.questions[currentQuestion].time);
         }
@@ -194,17 +202,28 @@ export default observer(function Play() {
                     :
                     <Segment inverted textAlign='center' vertical className='questions'>
                         <Container>
-                            <span role="img" aria-label="Heart">
-                                🎉
-                            </span>
-                            <h1>You earned {totalScore} points</h1>
+                            <div style={{ "marginTop": "100px" }}>
+                                <span role="img" aria-label="Heart" id='finished-span'>
+                                    {questionsCorrectCount === 0 && '💩'}
+                                    {questionsCorrectCount === quiz.questions.length && '🌟'}
+                                    {questionsCorrectCount > 0 && questionsCorrectCount < quiz.questions.length && '🌟'}
+                                </span>
+                                {questionsCorrectCount === 0 && <h1>Mamma mia, that was horrendous...</h1>}
+                                {questionsCorrectCount === quiz.questions.length && <h1>You are a star!!</h1>}
+                                {questionsCorrectCount > 0 && questionsCorrectCount < quiz.questions.length && <h1>Superb!</h1>}
+                            </div>
+                            <br />
+                            <Label size='huge' basic color='blue' circular><h1 style={{ "fontSize": "30px", "padding": "0px 30px" }}>
+                                You earned {totalScore} points</h1></Label>
+                            <br />
+                            <Label size='huge' basic color='purple' circular><h1 style={{ "fontSize": "30px", "padding": "0px 30px" }}>
+                                {questionsCorrectCount} correct out of {quiz.questions.length}</h1></Label>
                             <h1>Leaderboard goes here</h1>
                             <Button.Group size='large'>
-                                <Button color='pink'>Homepage</Button>
+                                <Button color='pink' as={Link} to='/community' onClick={() => restartStreak()}>Homepage</Button>
                                 <Button.Or />
-                                <Button positive >Replay quiz</Button>
+                                <Button positive onClick={() => window.location.reload()} >Replay quiz</Button>
                             </Button.Group>
-
                         </Container>
                     </Segment>
                 )
