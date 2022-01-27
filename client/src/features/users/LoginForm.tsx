@@ -4,16 +4,23 @@ import React from 'react';
 import { Button, Header, Label } from 'semantic-ui-react';
 import MyTextInput from '../../app/common/form/MyTextInput';
 import { useStore } from '../../app/stores/store';
+import * as Yup from 'yup';
 
 export default observer(function LoginForm() {
     const { userStore } = useStore();
+
+    const validationSchema = Yup.object({
+        email: Yup.string().email().required('Valid email is required'),
+        password: Yup.string().required('Password is required'),
+    })
     return (
         <Formik
             initialValues={{ email: '', password: '', error: null }}
             onSubmit={(values, { setErrors }) => userStore.login(values).catch((error: any) =>
-                setErrors({ error: error.response.data }))}
+                setErrors({ error: error[0].message }))}
+            validationSchema={validationSchema}
         >
-            {({ handleSubmit, isSubmitting, errors }) => (
+            {({ handleSubmit, isSubmitting, errors, dirty, isValid }) => (
                 <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
                     <Header as='h2' content='Login to Quizzly' color='pink' textAlign='center' />
                     <MyTextInput name='email' placeholder='Email' />
@@ -22,7 +29,9 @@ export default observer(function LoginForm() {
                         name='error' render={() =>
                             <Label style={{ marginBottom: 10 }} basic color='red' content={errors.error} />}
                     />
-                    <Button loading={isSubmitting} color='pink' content='Login' type='submit' fluid />
+                    <Button loading={isSubmitting}
+                     disabled={!isValid || !dirty}
+                     color='pink' content='Login' type='submit' fluid />
                 </Form>
             )}
         </Formik>

@@ -4,20 +4,21 @@ import { Header, Segment, Table } from "semantic-ui-react";
 import { useStore } from "../../app/stores/store";
 
 interface Props {
-    id: string
+    id: string,
+    get: number
 }
 
-export default observer(function Leaderboard({ id }: Props) {
+export default observer(function Leaderboard({ id, get }: Props) {
     const { quizStore, userStore } = useStore();
 
     useEffect(() => {
         userStore.getUser();
         if (id) quizStore.loadQuiz(id);
-    }, [quizStore.selectedQuiz])
+    }, [quizStore.saveResult, quizStore.selectedQuiz?.leaderboard])
     return (
         <>
             <Segment>
-                <Table size="large" basic='very' celled collapsing color="green">
+                <Table size="large" basic='very' celled  color="green">
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Rank</Table.HeaderCell>
@@ -27,7 +28,7 @@ export default observer(function Leaderboard({ id }: Props) {
                     </Table.Header>
 
                     <Table.Body>
-                        {quizStore.selectedQuiz?.leaderboard.slice(0, 5).map((element, index) => {
+                        {quizStore.selectedQuiz?.leaderboard.slice(0, get).map((element, index) => {
                             return <Table.Row key={element.user.id}>
                                 <Table.Cell>
                                     {index + 1}

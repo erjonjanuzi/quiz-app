@@ -5,6 +5,7 @@ import { Button, Card, Divider, Grid, Header, Icon, Image, Item, Label, Segment,
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import NavBar from '../../app/layout/NavBar';
 import { useStore } from '../../app/stores/store';
+import Leaderboard from './Leaderboard';
 
 export default observer(function ViewQuizPage() {
     const { quizStore, userStore } = useStore();
@@ -54,6 +55,12 @@ export default observer(function ViewQuizPage() {
                             </Card.Content>
                         </Card>
                     </Segment>
+                    <Segment.Group>
+                        <Segment>
+                            <h1>Leaderboard</h1>
+                        </Segment>
+                        <Leaderboard id={id} get={20} />
+                    </Segment.Group>
                 </Grid.Column>
                 <Grid.Column width={10}>
                     <Segment.Group>
@@ -77,7 +84,7 @@ export default observer(function ViewQuizPage() {
                             {selectedQuiz.questions.map(question => {
                                 return <Segment secondary color='purple' >
                                     <Label content={count++} circular size='massive' />
-                                    <Header as='h1' content={question.text} style={{"display": "inline", "margin-left": "10px"}}/>
+                                    <Header as='h1' content={question.text} style={{ "display": "inline", "margin-left": "10px" }} />
                                     <Header sub content={`${question.points} points`} floated='right' color='green' />
                                 </Segment>
                             })}

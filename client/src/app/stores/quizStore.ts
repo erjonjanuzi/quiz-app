@@ -213,7 +213,9 @@ export default class QuizStore {
         try {
             const quiz = await agent.Quizzes.saveResult(id, body) as Quiz;
             runInAction(() => {
-                this.selectedQuiz = quiz;
+                if (this.selectedQuiz) {
+                    this.selectedQuiz.leaderboard = quiz.leaderboard;
+                }
             })
         } catch (error) {
             console.log(error);

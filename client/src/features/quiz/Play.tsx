@@ -24,6 +24,7 @@ export default observer(function Play() {
     const [totalScore, setTotalScore] = useState(0);
     const [timerEnded, setTimerEnded] = useState(false);
     const [lastQuestion, setLastQuestion] = useState(false);
+    const [finalScore, setFinalScore] = useState(0);
 
     const [play, { stop }] = useSound('/assets/sounds/music.mp3', {
         volume: 1
@@ -75,7 +76,7 @@ export default observer(function Play() {
     }
 
     const handleQuizEnd = async () => {
-        await quizStore.saveResult(id, { score: totalScore, answerHistory }).then(() => console.log('Saved results'));
+        await quizStore.saveResult(id, { score: totalScore, answerHistory }).then(() => setFinalScore(totalScore));
         setGameOver(true);
         stop();
     }
@@ -98,7 +99,7 @@ export default observer(function Play() {
         if (quiz && currentQuestion + 1 === quiz?.questions.length) {
             setLastQuestion(true);
         }
-    }, [questionOver, score, start, quiz])
+    }, [questionOver, score, start, quiz?.leaderboard]) //deleted quiz
 
     if (loadingInitial || !quiz) return <LoadingComponent />;
 
@@ -185,7 +186,12 @@ export default observer(function Play() {
                                         <Header style={{ 'font-size': '50px' }} content={correct ? 'Correct' : 'Wrong'} />
                                     </Segment>
                                 }
-                                <Header style={{ 'font-size': '70px', 'margin-top': '100px', 'color': 'white' }} content={`${correct ? '+' : ''} ${score} points`} />
+                                <Header style={{ 'font-size': '70px', 'margin-top': '50px', 'color': 'white' }} content={`${correct ? '+' : ''} ${score} points`} />
+                                <Label size='huge' color='green' circular><h1 style={{ "fontSize": "20px", "padding": "0px 30px" }}>
+                                    {quiz.questions[currentQuestion].resultHistory.correct} other people correct</h1></Label>
+                                <Label size='huge' color='red' circular><h1 style={{ "fontSize": "20px", "padding": "0px 30px" }}>
+                                    {quiz.questions[currentQuestion].resultHistory.incorrect} other people incorrect</h1></Label>
+                                <br /><br />
                                 {streak !== 0 &&
                                     <h1>{`Answer streak🔥 `}<Label content={streak} color='red' circular size='massive' /></h1>
                                 }
@@ -217,14 +223,14 @@ export default observer(function Play() {
                             </div>
                             <br />
                             <Label size='huge' basic color='blue' circular><h1 style={{ "fontSize": "30px", "padding": "0px 30px" }}>
-                                You earned {totalScore} points</h1></Label>
+                                You earned {finalScore} points</h1></Label>
                             <br />
                             <Label size='huge' basic color='purple' circular><h1 style={{ "fontSize": "30px", "padding": "0px 30px" }}>
                                 {questionsCorrectCount} correct out of {quiz.questions.length}</h1></Label>
-                                <br /><br />
-                            <div style={{"display": "flex", "flexDirection": "column", "justifyContent": "center", "alignItems": "center"}}>
+                            <br /><br />
+                            <div style={{ "display": "flex", "flexDirection": "column", "justifyContent": "center", "alignItems": "center" }}>
                                 <h1>Top 5 all time</h1>
-                                <Leaderboard id={id} />
+                                <Leaderboard id={id} get={5} />
                             </div>
                             <br /><br />
                             <Button.Group size='large'>
