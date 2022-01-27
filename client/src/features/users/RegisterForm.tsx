@@ -20,7 +20,7 @@ export default observer(function RegisterForm() {
                     firstName: Yup.string().required('Name is required'),
                     lastName: Yup.string().required('Last name is required'),
                     email: Yup.string().email().required('Provide a valid email'),
-                    password: Yup.string().min(8).required('Password must be at least 8 characters long'),
+                    password: Yup.string().min(8).required('Password is required'),
                     role: Yup.string().required()
                 })}
             >

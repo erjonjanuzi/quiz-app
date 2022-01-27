@@ -59,7 +59,7 @@ export default observer(function ViewQuizPage() {
                         <Segment>
                             <h1>Leaderboard</h1>
                         </Segment>
-                        <Leaderboard id={id} get={20} />
+                        <Leaderboard id={id} get={10} />
                     </Segment.Group>
                 </Grid.Column>
                 <Grid.Column width={10}>
@@ -86,6 +86,7 @@ export default observer(function ViewQuizPage() {
                                     <Label content={count++} circular size='massive' />
                                     <Header as='h1' content={question.text} style={{ "display": "inline", "margin-left": "10px" }} />
                                     <Header sub content={`${question.points} points`} floated='right' color='green' />
+                                    <Header as='h4' icon={'time outline'} content={`${question.time}s`} floated='right' color='blue' />
                                 </Segment>
                             })}
                         </Segment>

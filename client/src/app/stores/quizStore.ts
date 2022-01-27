@@ -2,6 +2,7 @@ import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Quiz } from "../models/quiz";
 import { toast } from "react-toastify";
+import { history } from "../..";
 
 export default class QuizStore {
     quizRegistry = new Map<string, Quiz>();
@@ -19,27 +20,30 @@ export default class QuizStore {
         makeAutoObservable(this)
     }
 
-    // get quizzesByDate() {
-    //     return Array.from(this.activityRegistry.values()).sort((a, b) =>
-    //         a.date!.getTime() - b.date!.getTime());
-    // }
+    get quizzesByDate() {
+        return Array.from(this.quizRegistry.values()).reverse().slice(0, 8);
+    }
 
-    // get groupedActivities() {
-    //     return Object.entries(
-    //         this.activitiesByDate.reduce((activities, activity) => {
-    //             const date = format(activity.date!, 'dd MMM yyyy');
-    //             activities[date] = activities[date] ? [...activities[date], activity] : [activity];
-    //             return activities;
-    //         }, {} as {[key: string]: Activity[]})
-    //     )
-    // }
+    get mostPopularQuizzes() {
+        return Array.from(this.quizRegistry.values()).sort((a, b) =>
+            b.timesPlayed - a.timesPlayed).slice(0, 4);
+    }
+
+    get quizzesBySubject() {
+        return Array.from(this.quizRegistry.values()).sort((a, b) =>
+            (a.subject > b.subject) ? 1 : ((b.subject > a.subject) ? -1 : 0));
+    }
 
     get quizzes() {
         return Array.from(this.quizRegistry.values());
     }
 
     get userQuizzes() {
-        return Array.from(this.quizLibrary.values());
+        return Array.from(this.quizLibrary.values()).reverse();
+    }
+
+    getQuizzesBySubject(subject: string){
+        return this.quizzesBySubject.filter(i => i.subject === subject).slice(0, 4);
     }
 
     increaseStreak = () => {
@@ -226,10 +230,10 @@ export default class QuizStore {
         try {
             await agent.Quizzes.delete(id);
             runInAction(() => {
-                this.loadUserQuizzes();
                 this.loadQuizzes();
                 this.selectedQuiz = undefined;
             })
+            history.push('/library')
         } catch (error) {
             console.log(error);
         }

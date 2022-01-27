@@ -227,7 +227,7 @@ export default observer(function EditQuiz() {
                 cancelButton='Cancel'
                 confirmButton="Delete"
                 onCancel={() => setOpenConfirm(false)}
-                onConfirm={() => quizStore.deleteQuiz(id).then(() => history.push('/library'))}
+                onConfirm={() => quizStore.deleteQuiz(id)}
             />
         </>
     )
