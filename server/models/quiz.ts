@@ -1,5 +1,30 @@
 import mongoose from 'mongoose';
 
+interface Question {
+    text: string;
+    points: number;
+    time: number;
+    resultHistory: {
+        correct: number;
+        incorrect: number;
+    }
+    answers: Answer[]
+}
+
+interface Answer {
+    text: string;
+    isCorrect: boolean
+}
+
+interface Leaderboard {
+    user: {
+        id: string;
+        firstName: string;
+        lastName: string;
+    },
+    score: number
+}
+
 // An interface that describes the properties that are required
 // to create a new quiz
 interface QuizAttrs {
@@ -8,8 +33,8 @@ interface QuizAttrs {
     subject: string;
     creator: string;
     timesPlayed: number;
-    leaderboard: any[];
-    questions: any[];
+    leaderboard: Leaderboard[];
+    questions: Question[];
     createdAt: Date;
     isPublic: boolean;
 }
@@ -28,8 +53,8 @@ interface QuizDoc extends mongoose.Document {
     subject: string;
     creator: string;
     timesPlayed: number;
-    leaderboard: any[];
-    questions: any[];
+    leaderboard: Leaderboard[];
+    questions: Question[];
     createdAt: Date;
     isPublic: boolean;
 }

@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-
-interface UserPayload {
-    id: string;
-    email: string;
-    role: string;
-}
+import { TokenService } from '../../services/TokenService';
+import { UserPayload } from '../interfaces/UserPayload';
 
 declare global {
     namespace Express {
@@ -16,14 +11,15 @@ declare global {
 }
 
 export const currentUser = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers?.authorization){
+    if (!req.headers?.authorization) {
         return next();
     }
 
     try {
-        const payload = jwt.verify(req.headers.authorization, process.env.JWT_KEY!) as UserPayload;
-        req.currentUser = payload;
-    } catch(err){}
+        req.currentUser = new TokenService().verifyToken(req.headers.authorization);
+    } catch (err) {
+        console.log(err);
+    }
 
     next();
 }
