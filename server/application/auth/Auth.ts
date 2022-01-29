@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { User } from '../models/user';
-import { BadRequestError } from '../common/errors/bad-request-error';
+import { User } from '../../models/user';
+import { BadRequestError } from '../errors/BadRequestError';
 import { PasswordService } from '../services/PasswordService';
-import { TokenService } from '../services/TokenService';
+import { tokenService } from '../services/TokenService';
 
-export class UserController {
+export class Auth {
     static register = async (req: Request, res: Response) => {
         const { firstName, lastName, email, password, role } = req.body;
 
@@ -18,7 +18,7 @@ export class UserController {
         const user = User.build({ firstName, lastName, email, password: hashed, role });
         await user.save();
 
-        const token = new TokenService().createToken({
+        const token = tokenService.create({
             id: user.id,
             email,
             role: user.role
@@ -48,7 +48,7 @@ export class UserController {
             throw new BadRequestError('Invalid credentials');
         }
 
-        const token = new TokenService().createToken({
+        const token = tokenService.create({
             id: user.id,
             email,
             role: user.role

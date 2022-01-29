@@ -4,15 +4,17 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import 'express-async-errors';
 import mongoose from 'mongoose'
+import { logger } from './infrastructure/logging/LoggerFactory';
 
 config(); //dotenv config
 
-import { userRoutes } from './api/userRoutes';
-import { quizRoutes } from './api/quizRoutes';
+import { authRoutes } from './api/routes/authRoutes';
+import { quizRoutes } from './api/routes/quizRoutes';
 
-import { NotFoundError } from './common/errors/not-found-error';
-import { errorHandler } from './common/middlewares/error-handler';
-import { currentUser } from './common/middlewares/current-user';
+import { errorHandler } from './api/middlewares/error-handler';
+import { currentUser } from './api/middlewares/current-user';
+import { ErrorFactory, Type } from './application/errors/ErrorFactory';
+
 
 const app = express();
 
@@ -21,11 +23,11 @@ app.use(cors());
 
 app.use(currentUser);
 
-app.use(userRoutes);
+app.use(authRoutes);
 app.use(quizRoutes);
 
 app.all('*', async (req, res, next) => {
-    throw new NotFoundError();
+    throw ErrorFactory.create(Type.NotFound);
 });
 
 app.use(errorHandler);
@@ -40,13 +42,13 @@ const start = async () => {
 
     try {
         await mongoose.connect(process.env.DB_URI);
-        console.log('Connected to MongoDB');
-    } catch (err) {
-        console.log(err);
+        logger.info('Connected to MongoDB');
+    } catch (err: any) {
+        throw ErrorFactory.create(Type.DatabaseConnection);
     }
 
     app.listen(process.env.SERVER_PORT, () => {
-        console.log(`🚀Listening on port ${process.env.SERVER_PORT}!`);
+        logger.info(`🚀Listening on port ${process.env.SERVER_PORT}!`);
     });
 }
 

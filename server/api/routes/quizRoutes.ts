@@ -1,8 +1,8 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { requireAuth } from '../common/middlewares/require-auth';
-import { validateRequest } from '../common/middlewares/validate-request';
-import { QuizController } from '../controllers/QuizController';
+import { requireAuth } from '../middlewares/require-auth';
+import { validateRequest } from '../middlewares/validate-request';
+import { QuizController } from '../../application/quiz/QuizController';
 
 const router = express.Router();
 

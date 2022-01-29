@@ -1,8 +1,8 @@
 import express from 'express';
-import { currentUser } from '../common/middlewares/current-user';
-import { UserController } from '../controllers/UserController';
+import { currentUser } from '../middlewares/current-user';
+import { Auth } from '../../application/auth/Auth';
 import { body } from 'express-validator'
-import { validateRequest } from '../common/middlewares/validate-request';
+import { validateRequest } from '../middlewares/validate-request';
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.post('/api/users/login', [
         .trim()
         .notEmpty()
         .withMessage('Password must be provided')
-], validateRequest, UserController.login);
+], validateRequest, Auth.login);
 
 router.post('/api/users/register', [
     body('firstName')
@@ -33,8 +33,8 @@ router.post('/api/users/register', [
     body('role')
         .isString()
         .withMessage('Role must be provided'),
-], validateRequest, UserController.register);
+], validateRequest, Auth.register);
 
-router.get('/api/users/current', currentUser, UserController.current);
+router.get('/api/users/current', currentUser, Auth.current);
 
-export { router as userRoutes };
+export { router as authRoutes };

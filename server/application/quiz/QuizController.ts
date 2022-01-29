@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 
-import { BadRequestError } from '../common/errors/bad-request-error';
-import { NotAuthorizedError } from '../common/errors/not-authorized-error';
-import { NotFoundError } from '../common/errors/not-found-error';
+import { ErrorFactory, Type } from '../errors/ErrorFactory';
 
-import { Quiz } from '../models/quiz';
-import { User } from '../models/user';
+import { Quiz } from '../../models/quiz';
+import { User } from '../../models/user';
 
 export class QuizController {
 
@@ -13,7 +11,7 @@ export class QuizController {
         const quizzes = await Quiz.find({ isPublic: true }).populate("creator");
 
         if (!quizzes) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
 
         res.send(quizzes);
@@ -43,7 +41,7 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id).populate("creator");
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         res.send(quiz);
@@ -59,14 +57,14 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         if (quiz.creator.toString() !== req.currentUser?.id) {
-            throw new NotAuthorizedError();
+            throw ErrorFactory.create(Type.NotAuthorized);
         }
     
-        const result = await Quiz.deleteOne({ _id: quiz.id });
+        await Quiz.deleteOne({ _id: quiz.id });
     
         res.status(204).send({});
     }
@@ -77,11 +75,11 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         if (quiz.creator.toString() !== req.currentUser?.id) {
-            throw new NotAuthorizedError();
+            throw ErrorFactory.create(Type.NotAuthorized);
         }
     
         quiz.set({
@@ -99,11 +97,11 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         if (quiz.creator.toString() !== req.currentUser?.id) {
-            throw new NotAuthorizedError();
+            throw ErrorFactory.create(Type.NotAuthorized);
         }
     
         quiz.set({
@@ -119,11 +117,11 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         if (quiz.creator.toString() !== req.currentUser?.id) {
-            throw new NotAuthorizedError();
+            throw ErrorFactory.create(Type.NotAuthorized);
         }
         
         const { question } = req.body;
@@ -139,11 +137,11 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         if (quiz.creator.toString() !== req.currentUser?.id) {
-            throw new NotAuthorizedError();
+            throw ErrorFactory.create(Type.NotAuthorized);
         }
     
         const { index } = req.params;
@@ -159,7 +157,7 @@ export class QuizController {
         const quiz = await Quiz.findById(req.params.id);
     
         if (!quiz) {
-            throw new NotFoundError();
+            throw ErrorFactory.create(Type.NotFound);
         }
     
         const { score } = req.body;
@@ -167,7 +165,7 @@ export class QuizController {
         quiz.timesPlayed++;
     
         const answerHistory: string[] = req.body.answerHistory;
-        const tempQuestions = quiz.questions;
+        const tempQuestions: any[] = quiz.questions;
         for (let answer in answerHistory) {
             tempQuestions[answer].resultHistory[answerHistory[answer]]++;
         }
