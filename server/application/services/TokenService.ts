@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { UserPayload } from '../../infrastructure/interfaces/UserPayload';
+import { UserPayload } from '../interfaces/UserPayload';
 
 class TokenService {
     private static instance: TokenService;

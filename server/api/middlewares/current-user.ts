@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../../infrastructure/logging/LoggerFactory';
 import { tokenService } from '../../application/services/TokenService';
-import { UserPayload } from '../../infrastructure/interfaces/UserPayload';
+import { UserPayload } from '../../application/interfaces/UserPayload';
 
 declare global {
     namespace Express {
