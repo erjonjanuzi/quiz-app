@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { UserPayload } from '../interfaces/UserPayload';
 
-// Singleton pattern
 class TokenService {
     private static instance: TokenService;
 
