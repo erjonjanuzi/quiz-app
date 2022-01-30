@@ -8,7 +8,7 @@ interface Props {
     options: any;
     label?: string;
 }
-// Costum select input 
+
 
 export default function MySelectInput(props: Props) {
     const [field, meta, helpers] = useField(props.name); 
