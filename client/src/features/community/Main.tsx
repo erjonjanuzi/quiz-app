@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Divider, Header } from 'semantic-ui-react';
 import NavBar from '../../app/layout/NavBar';
 import { useStore } from '../../app/stores/store';

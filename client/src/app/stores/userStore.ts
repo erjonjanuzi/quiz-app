@@ -1,8 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { toast } from "react-toastify";
 import { history } from "../..";
 import agent from "../api/agent";
-import { User, UserFormValues } from "../models/user";
+import { UserFormValues } from "../models/user";
 import { store } from "./store";
 
 export default class UserStore {
