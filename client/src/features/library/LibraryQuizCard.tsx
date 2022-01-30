@@ -52,13 +52,3 @@ export default observer(function LibraryQuizCard({ quiz }: Props) {
 
     )
 })
-
-{/* <Confirm
-open={openConfirm}
-header='Delete quiz'
-content='This action cannot be undone. Are you sure?'
-cancelButton='Cancel'
-confirmButton="Delete"
-onCancel={() => setOpenConfirm(false)}
-onConfirm={() => console.log('haha')}
-/> */}

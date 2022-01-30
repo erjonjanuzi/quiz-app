@@ -5,12 +5,6 @@ import { Quiz } from '../models/quiz';
 import { User, UserFormValues } from '../models/user';
 import { store } from '../stores/store';
 
-const sleep = (delay: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay)
-    })
-}
-
 axios.defaults.baseURL = 'http://localhost:4000/api';
 
 axios.interceptors.request.use((config) => {
