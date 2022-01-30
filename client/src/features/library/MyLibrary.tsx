@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
-import { Button, Card, Divider, Header } from 'semantic-ui-react';
+import { useEffect } from 'react';
+import { Card, Divider, Header } from 'semantic-ui-react';
 import NavBar from '../../app/layout/NavBar';
 import { useStore } from '../../app/stores/store';
 import LibraryQuizCard from './LibraryQuizCard';

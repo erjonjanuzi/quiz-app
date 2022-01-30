@@ -1,6 +1,5 @@
-import React from 'react';
 import { useTimer } from "react-timer-hook";
-import { Container, Header, Segment } from 'semantic-ui-react';
+import { Header } from 'semantic-ui-react';
 
 interface TimerSettings {
     autoStart?: boolean;

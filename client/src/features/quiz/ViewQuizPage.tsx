@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Card, Divider, Grid, Header, Icon, Image, Item, Label, Segment, Statistic } from 'semantic-ui-react';
+import { Button, Card, Grid, Header, Icon, Image, Label, Segment, Statistic } from 'semantic-ui-react';
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import NavBar from '../../app/layout/NavBar';
 import { useStore } from '../../app/stores/store';
 import Leaderboard from './Leaderboard';
 
 export default observer(function ViewQuizPage() {
-    const { quizStore, userStore } = useStore();
+    const { quizStore } = useStore();
     const { selectedQuiz, loadQuiz, loadingInitial, clearSelectedQuiz } = quizStore;
     const { id } = useParams<{ id: string }>();
 

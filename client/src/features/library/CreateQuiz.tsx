@@ -1,7 +1,7 @@
 import { ErrorMessage, Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
-import { Button, Divider, Grid, Header, Icon, Label, Message, Segment } from 'semantic-ui-react';
+import { useEffect, useState } from 'react';
+import { Button, Divider, Grid, Header, Label, Message, Segment } from 'semantic-ui-react';
 import MySelectInput from '../../app/common/form/MySelectInput';
 import MyTextArea from '../../app/common/form/MyTextArea';
 import MyTextInput from '../../app/common/form/MyTextInput';

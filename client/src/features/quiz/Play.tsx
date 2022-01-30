@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Container, Divider, Grid, Header, Icon, Label, Segment } from 'semantic-ui-react';
+import { Button, Container, Header, Label, Segment } from 'semantic-ui-react';
 import LoadingComponent from '../../app/layout/LoadingComponent';
 import { useStore } from '../../app/stores/store';
 import QuestionTimer from './QuestionTimer';

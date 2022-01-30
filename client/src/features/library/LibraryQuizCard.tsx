@@ -1,16 +1,13 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Card, Confirm, Icon, Image, Label, Segment } from 'semantic-ui-react';
+import { Button, Card, Icon, Image, Label } from 'semantic-ui-react';
 import { Quiz } from '../../app/models/quiz';
-import { useStore } from '../../app/stores/store';
 
 interface Props {
     quiz: Quiz
 }
 
 export default observer(function LibraryQuizCard({ quiz }: Props) {
-    const { quizStore } = useStore();
 
     return (
         <>
